@@ -3,3 +3,6 @@ runhs:
 
 hs:
 	cd ./hypermedia.system && air
+
+templ:
+	cd ./templ && air

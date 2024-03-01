@@ -1,0 +1,10 @@
+package main
+
+var greeting = "Welcome!"
+
+templ headerTemplate(name string) {
+	<header data-testid="headerTemplate">
+		<h1>{ name }</h1>
+		<h2>{ greeting } comes from ordinary Go code</h2>
+	</header>
+}

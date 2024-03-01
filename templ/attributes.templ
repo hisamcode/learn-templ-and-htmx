@@ -1,0 +1,60 @@
+
+package main
+
+import "strings"
+
+// constant attribute ex data-testid
+templ constanAttribute() {
+	<p data-testid="paragraph">Text</p>
+}
+
+// use ? to denote the attribute is boolean
+// if false output: <hr/>
+// if true output: <hr noshade/>
+templ booleanAttribute(noshade bool) {
+	<hr noshade?={ noshade }/>
+}
+
+// output <hr style="padding: 10px" class="itIsTrue" />
+templ conditionalAttributes() {
+	<hr
+		style="padding: 10px;"
+		if true {
+			class="itIsTrue"
+		}
+	/>
+}
+
+templ spreadAttribute(shouldBeUsed bool, attrs templ.Attributes) {
+	<p { attrs... }></p>
+	<hr
+		if shouldBeUsed {
+			{ attrs... }
+		}
+	/>
+}
+
+// output <p data-testid="paragraph">Text</p>
+templ usageSpreadAttribute() {
+	@spreadAttribute(false, templ.Attributes{"data-testid": "paragraph"})
+}
+
+templ URLAttribute(p Person) {
+	<a href={ templ.URL(p.URL) }>{ strings.ToUpper(p.Name) } </a>
+}
+
+script jsAttrWithParameter(a string, b string, c int) {
+    console.log(a, b, c)
+}
+
+script jsAttrWithoutParameter() {
+    console.log("hai hai hai")
+}
+
+templ jsAttrButton(text string) {
+	<button
+		onClick={ jsAttrWithParameter("test", text, 123) }
+		onMouseover={ jsAttrWithoutParameter() }
+		type="button"
+	>{ text }</button>
+}

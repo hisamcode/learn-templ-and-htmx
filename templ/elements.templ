@@ -1,0 +1,12 @@
+package main
+
+// Attributes and element can contain expressions
+templ button(name string, content string) {
+	<button value={ name } class="button">{ content }</button>
+}
+
+templ tagMustBeClosed() {
+	<div>Test</div>
+	<img src="images/test.png"/>
+	<br/>
+}
