@@ -1,0 +1,12 @@
+package main
+
+templ userTypeDisplay(userType string) {
+	switch userType {
+		case "test":
+			<span>{ "Test User" }</span>
+		case "admin":
+			<span>{ "Admin User" }</span>
+		default:
+			<span>{ "Unknown user" }</span>
+	}
+}
