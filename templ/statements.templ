@@ -1,0 +1,20 @@
+package main
+
+import "fmt"
+
+templ showHelloIfTrue(b bool) {
+	<div>
+		if b {
+			<p>Hello</p>
+		}
+	</div>
+}
+
+// if need word if, for, switch use go string expression, or capitalize If, Switch, For
+templ display(price float64, count int) {
+	<p>Switch to linux</p>
+	<p>{ `switch to linux` }</p>
+	<p>{ "for a day" }</p>
+	<p>{ fmt.Sprintf("%f", price) } { "for" } { fmt.Sprintf("%d", count) }</p>
+	<p>{ fmt.Sprintf("%f for %d", price, count) }</p>
+}

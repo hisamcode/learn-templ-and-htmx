@@ -56,6 +56,13 @@ func main() {
 
 	})
 
+	http.HandleFunc("GET /statements", func(w http.ResponseWriter, r *http.Request) {
+		showHelloIfTrue(true).Render(context.Background(), os.Stdout)
+		fmt.Println()
+		display(250000.00, 3).Render(context.Background(), os.Stdout)
+		fmt.Println()
+	})
+
 	http.ListenAndServe("127.0.0.1:8000", nil)
 
 	component.Render(context.Background(), os.Stdout)
