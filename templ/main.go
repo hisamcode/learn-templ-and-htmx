@@ -15,6 +15,10 @@ type Person struct {
 
 const exclamation = "!"
 
+type Item struct {
+	Name string
+}
+
 func main() {
 	component := Hello("Hisam")
 
@@ -28,6 +32,7 @@ func main() {
 		fmt.Println()
 		w.WriteHeader(http.StatusNoContent)
 	})
+
 	http.HandleFunc("GET /attributes", func(w http.ResponseWriter, r *http.Request) {
 		constanAttribute().Render(r.Context(), os.Stdout)
 		fmt.Println()
@@ -64,6 +69,27 @@ func main() {
 
 	http.HandleFunc("GET /ifelse", func(w http.ResponseWriter, r *http.Request) {
 		ifelse(true).Render(r.Context(), w)
+	})
+
+	http.HandleFunc("GET /switch", func(w http.ResponseWriter, r *http.Request) {
+		userTypeDisplay("Other").Render(r.Context(), os.Stdout)
+	})
+
+	http.HandleFunc("GET /forloops", func(w http.ResponseWriter, r *http.Request) {
+		items := []Item{
+			Item{"Hisam"},
+			Item{"Maulana"},
+		}
+		nameList(items).Render(r.Context(), os.Stdout)
+	})
+
+	http.HandleFunc("GET /template-composition", func(w http.ResponseWriter, r *http.Request) {
+		showAll().Render(r.Context(), os.Stdout)
+		fmt.Println()
+		c := paragraph("Dynamic contenst")
+		layout(c).Render(r.Context(), os.Stdout)
+		fmt.Println()
+		root().Render(r.Context(), w)
 	})
 
 	http.ListenAndServe("127.0.0.1:8000", nil)
