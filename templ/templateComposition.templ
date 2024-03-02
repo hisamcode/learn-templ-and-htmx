@@ -1,0 +1,52 @@
+package main
+
+// template composition
+templ showAll() {
+	@left()
+	@middle()
+	@right()
+	@wrapChildren() {
+		<div>Inserted from the top</div>
+	}
+}
+
+templ left() {
+	<div>left</div>
+}
+
+templ middle() {
+	<div>Middle</div>
+}
+
+templ right() {
+	<div>right</div>
+}
+
+// children can be passed to a component for it wrap
+templ wrapChildren() {
+	<div class="wrapper">
+		{ children... }
+	</div>
+}
+
+// component as parameter
+templ heading() {
+	<h1>Heading</h1>
+}
+
+templ layout(contents templ.Component) {
+	<div class="heading">
+		@heading()
+	</div>
+	<div class="contents">
+		@contents
+	</div>
+}
+
+templ paragraph(contents string) {
+	<p>{ contents }</p>
+}
+
+templ root() {
+	@layout(paragraph("Dynamic contents"))
+}
