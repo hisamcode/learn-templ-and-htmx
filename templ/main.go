@@ -14,6 +14,8 @@ type Person struct {
 	URL  string
 }
 
+const exclamation = "!"
+
 func main() {
 	component := Hello("Hisam")
 
@@ -41,6 +43,17 @@ func main() {
 		jsAttrButton("halo").Render(context.Background(), os.Stdout)
 		jsAttrButton("hai").Render(context.Background(), w)
 		fmt.Println()
+	})
+
+	http.HandleFunc("GET /expressions", func(w http.ResponseWriter, r *http.Request) {
+		literals().Render(context.Background(), os.Stdout)
+		fmt.Println()
+		variables("Hello", Person{"Hisam", ""}).Render(context.Background(), os.Stdout)
+		fmt.Println()
+		functions().Render(context.Background(), os.Stdout)
+		fmt.Println()
+		escaping().Render(context.Background(), os.Stdout)
+
 	})
 
 	http.ListenAndServe("127.0.0.1:8000", nil)

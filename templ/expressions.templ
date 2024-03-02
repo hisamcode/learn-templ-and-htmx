@@ -1,0 +1,25 @@
+package main
+
+import "strings"
+
+templ literals() {
+	<div>{ "print this" }</div>
+	<div>{ `and this` }</div>
+}
+
+templ variables(prefix string, p Person) {
+	<div>{ prefix } { p.Name } { exclamation }</div>
+}
+
+func getString() (string, error) {
+	return "DEF", nil
+}
+
+templ functions() {
+	<div>{ strings.ToUpper("abc") }</div>
+	<div>{ getString() }</div>
+}
+
+templ escaping() {
+	<div>{ `</div><script>alert('hello!')</script></div>` }</div>
+}
