@@ -1,0 +1,101 @@
+package main
+
+import "fmt"
+
+// CSS style management
+templ cssLayout(contents []templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Document</title>
+			<link rel="stylesheet" href="/styles/templ.css"/>
+		</head>
+		<body>
+			@page()
+			<div>
+				<h1>Heading</h1>
+			</div>
+			<div>
+				for _, c := range contents {
+					<div>
+						@c
+					</div>
+				}
+			</div>
+		</body>
+	</html>
+}
+
+// HTML class attribute
+templ button2(text string) {
+	<button class="button is-primary">{ text }</button>
+}
+
+// class expression
+templ button3(text string, className string) {
+	<button class={ className }>{ text }</button>
+}
+
+templ button4(text string, className string) {
+	<button class={ "button", className }>{ text }</button>
+}
+
+// dynamic class names, toggle addition of CSS classes to an element based on boolean value
+
+css red() {
+	background-color: #ff0000;
+}
+
+templ button5(text string, isPrimary bool) {
+	<button class={ "button", templ.KV("is-primary", isPrimary), templ.KV(red(), isPrimary) }>
+		{ text }
+	</button>
+}
+
+// CSS element
+templ page() {
+	<style type="text/css">
+        p {
+            font-family: sans-serif;
+        }
+        .button {
+            background-color:black;
+            color:white;
+        }
+    </style>
+}
+
+// CSS component
+var red1 = "#ff0000"
+var blue1 = "#0000ff"
+
+css primaryClassName() {
+	background-color: #ffffff;
+	color: { red1 };
+}
+
+css className() {
+	background-color: #ffffff;
+	color: { blue1 };
+}
+
+templ button6(text string, isPrimary bool) {
+	<button class={ "button", className(), templ.KV(primaryClassName(), isPrimary) }>
+		{ text }
+	</button>
+}
+
+// CSS component argument
+
+css loading(percent int) {
+	width: { fmt.Sprintf("%d%%", percent) };
+}
+
+templ divLoading() {
+	<div class={ loading(50) }></div>
+	<div class={ loading(50) }></div>
+}
+
+// css middleware

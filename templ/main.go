@@ -22,9 +22,11 @@ type Item struct {
 func main() {
 	component := Hello("Hisam")
 
-	http.Handle("GET /quickstart", templ.Handler(component))
-	http.Handle("GET /basic", templ.Handler(headerTemplate("Sapi")))
-	http.HandleFunc("GET /elements", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+
+	mux.Handle("GET /quickstart", templ.Handler(component))
+	mux.Handle("GET /basic", templ.Handler(headerTemplate("Sapi")))
+	mux.HandleFunc("GET /elements", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println()
 		button("hisam", "login").Render(r.Context(), os.Stdout)
 		fmt.Println()
@@ -33,7 +35,7 @@ func main() {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	http.HandleFunc("GET /attributes", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /attributes", func(w http.ResponseWriter, r *http.Request) {
 		constanAttribute().Render(r.Context(), os.Stdout)
 		fmt.Println()
 		booleanAttribute(false).Render(r.Context(), os.Stdout)
@@ -49,7 +51,7 @@ func main() {
 		fmt.Println()
 	})
 
-	http.HandleFunc("GET /expressions", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /expressions", func(w http.ResponseWriter, r *http.Request) {
 		literals().Render(r.Context(), os.Stdout)
 		fmt.Println()
 		variables("Hello", Person{"Hisam", ""}).Render(r.Context(), os.Stdout)
@@ -60,30 +62,29 @@ func main() {
 
 	})
 
-	http.HandleFunc("GET /statements", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /statements", func(w http.ResponseWriter, r *http.Request) {
 		showHelloIfTrue(true).Render(r.Context(), os.Stdout)
 		fmt.Println()
 		display(250000.00, 3).Render(r.Context(), os.Stdout)
 		fmt.Println()
 	})
 
-	http.HandleFunc("GET /ifelse", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /ifelse", func(w http.ResponseWriter, r *http.Request) {
 		ifelse(true).Render(r.Context(), w)
 	})
 
-	http.HandleFunc("GET /switch", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /switch", func(w http.ResponseWriter, r *http.Request) {
 		userTypeDisplay("Other").Render(r.Context(), os.Stdout)
 	})
 
-	http.HandleFunc("GET /forloops", func(w http.ResponseWriter, r *http.Request) {
-		items := []Item{
-			Item{"Hisam"},
-			Item{"Maulana"},
-		}
+	mux.HandleFunc("GET /forloops", func(w http.ResponseWriter, r *http.Request) {
+		items := []Item{}
+		items = append(items, Item{"Hisam"})
+		items = append(items, Item{"Maulana"})
 		nameList(items).Render(r.Context(), os.Stdout)
 	})
 
-	http.HandleFunc("GET /template-composition", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /template-composition", func(w http.ResponseWriter, r *http.Request) {
 		showAll().Render(r.Context(), os.Stdout)
 		fmt.Println()
 		c := paragraph("Dynamic contenst")
@@ -92,5 +93,21 @@ func main() {
 		root().Render(r.Context(), w)
 	})
 
-	http.ListenAndServe("127.0.0.1:8000", nil)
+	mux.HandleFunc("GET /css", func(w http.ResponseWriter, r *http.Request) {
+
+		cs := []templ.Component{
+			button("test", "test"),
+			button2("click me"),
+			button3("login", "login-red"),
+			button4("register", "blue"),
+			button5("button 5 clickme", true),
+			button6("Click me button 6", true),
+			divLoading(),
+		}
+
+		cssLayout(cs).Render(r.Context(), w)
+
+	})
+
+	http.ListenAndServe("127.0.0.1:8000", templ.NewCSSMiddleware(mux, primaryClassName(), className()))
 }
