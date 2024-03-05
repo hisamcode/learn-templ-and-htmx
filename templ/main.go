@@ -132,5 +132,9 @@ func main() {
 		jsPage(data, "hello templ").Render(r.Context(), w)
 	})
 
+	mux.HandleFunc("GET /comment", func(w http.ResponseWriter, r *http.Request) {
+		commentHello("hisam").Render(r.Context(), w)
+	})
+
 	http.ListenAndServe("127.0.0.1:8000", templ.NewCSSMiddleware(mux, primaryClassName(), className()))
 }

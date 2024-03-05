@@ -1,0 +1,15 @@
+package main
+
+templ commentTemplate() {
+	<!-- Single line -->
+	<!-- 
+        Single or multiline
+    -->
+}
+
+var greetingComment = "Hello!"
+
+templ commentHello(name string) {
+	@commentTemplate()
+	<p>{ greetingComment } { name }</p>
+}
