@@ -19,6 +19,11 @@ type Item struct {
 	Name string
 }
 
+type TimeValue struct {
+	Time  string  `json:"time"`
+	Value float64 `json:"value"`
+}
+
 func main() {
 	component := Hello("Hisam")
 
@@ -107,6 +112,24 @@ func main() {
 
 		cssLayout(cs).Render(r.Context(), w)
 
+	})
+
+	mux.HandleFunc("GET /javascript", func(w http.ResponseWriter, r *http.Request) {
+
+		data := []TimeValue{
+			{Time: "2019-04-11", Value: 80.01},
+			{Time: "2019-04-12", Value: 96.63},
+			{Time: "2019-04-13", Value: 76.64},
+			{Time: "2019-04-14", Value: 81.89},
+			{Time: "2019-04-15", Value: 74.43},
+			{Time: "2019-04-16", Value: 80.01},
+			{Time: "2019-04-17", Value: 96.63},
+			{Time: "2019-04-18", Value: 76.64},
+			{Time: "2019-04-19", Value: 81.89},
+			{Time: "2019-04-20", Value: 74.43},
+		}
+
+		jsPage(data, "hello templ").Render(r.Context(), w)
 	})
 
 	http.ListenAndServe("127.0.0.1:8000", templ.NewCSSMiddleware(mux, primaryClassName(), className()))

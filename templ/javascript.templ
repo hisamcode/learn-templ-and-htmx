@@ -1,0 +1,67 @@
+package main
+
+import "fmt"
+
+// Using Javascript with templ
+
+// Scripts
+templ jsPage(data []TimeValue, content string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Document</title>
+			@jsHead()
+		</head>
+		<body onload={ graph(data) }>
+			<button onclick="handleClick(this)">Click me</button>
+			@printToConsole(content)
+			@printToConsole(fmt.Sprintf("Again: %s and %s", content, "haha"))
+		</body>
+		<script type="text/javascript">
+        function handleClick(event) {
+            alert(event + 'clicked')
+        }
+        </script>
+		@jsChart()
+	</html>
+}
+
+// importing scripts
+templ jsHead() {
+	<head>
+		<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+	</head>
+}
+
+templ jsChart() {
+	<script type="text/javascript">
+        const chart = LightweightCharts.createChart(document.body, { width: 400, height: 300 });
+		const lineSeries = chart.addLineSeries();
+		lineSeries.setData([
+				{ time: '2019-04-11', value: 80.01 },
+				{ time: '2019-04-12', value: 96.63 },
+				{ time: '2019-04-13', value: 76.64 },
+				{ time: '2019-04-14', value: 81.89 },
+				{ time: '2019-04-15', value: 74.43 },
+				{ time: '2019-04-16', value: 80.01 },
+				{ time: '2019-04-17', value: 96.63 },
+				{ time: '2019-04-18', value: 76.64 },
+				{ time: '2019-04-19', value: 81.89 },
+				{ time: '2019-04-20', value: 74.43 },
+		]);
+    </script>
+}
+
+// script template
+
+script graph(data []TimeValue) {
+    const chart = LightweightCharts.createChart(document.body, { width: 400, height: 300 });
+	const lineSeries = chart.addLineSeries();
+	lineSeries.setData(data);
+}
+
+script printToConsole(content string) {
+    console.log(content)
+}
