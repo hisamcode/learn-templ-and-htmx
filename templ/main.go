@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -23,6 +24,11 @@ type TimeValue struct {
 	Time  string  `json:"time"`
 	Value float64 `json:"value"`
 }
+
+type contextKey string
+
+var themeContextKey contextKey = "theme"
+var contextClass = contextKey("class")
 
 func main() {
 	component := Hello("Hisam")
@@ -136,5 +142,47 @@ func main() {
 		commentHello("hisam").Render(r.Context(), w)
 	})
 
-	http.ListenAndServe("127.0.0.1:8000", templ.NewCSSMiddleware(mux, primaryClassName(), className()))
+	mux.HandleFunc("GET /context", func(w http.ResponseWriter, r *http.Request) {
+		s := Settings{
+			Username: "maulana",
+			Locale:   "ID",
+			Theme:    "DARK",
+		}
+
+		ctx := context.WithValue(r.Context(), themeContextKey, "test")
+
+		cs := []templ.Component{
+			ctop("hisam"),
+			ctop("maulana"),
+			ctop1(s),
+			themeName(),
+			themeName1(),
+			cpage(),
+		}
+
+		cssLayout(cs).Render(ctx, w)
+
+	})
+
+	http.ListenAndServe("127.0.0.1:8000", middleware(templ.NewCSSMiddleware(mux, primaryClassName(), className())))
+}
+
+func GetTheme(ctx context.Context) string {
+	if theme, ok := ctx.Value(themeContextKey).(string); ok {
+		return theme
+	}
+	return ""
+}
+
+func middleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		class := []string{"default"}
+		q := r.URL.Query()
+		if v, ok := q["class"]; ok {
+			class = v
+			fmt.Println(v)
+		}
+		ctx := context.WithValue(r.Context(), contextClass, class)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }

@@ -1,0 +1,62 @@
+package main
+
+// prop drilling
+templ ctop(name string) {
+	<div>
+		@cmiddle(name)
+	</div>
+}
+
+templ cmiddle(name string) {
+	<ul>
+		@cbottom(name)
+	</ul>
+}
+
+templ cbottom(name string) {
+	<li>{ name }</li>
+}
+
+// coupling
+type Settings struct {
+	Username string
+	Locale   string
+	Theme    string
+}
+
+templ ctop1(settings Settings) {
+	<div>
+		@cmiddle1(settings)
+	</div>
+}
+
+templ cmiddle1(settings Settings) {
+	<ul>
+		@cbottom1(settings)
+	</ul>
+}
+
+templ cbottom1(settings Settings) {
+	<li>{ settings.Theme }</li>
+}
+
+// Using context
+templ themeName() {
+	<div>{ ctx.Value(themeContextKey).(string) }</div>
+}
+
+// tidying up
+templ themeName1() {
+	<div>{ GetTheme(ctx) }</div>
+}
+
+// using context with http middleware
+templ cpage() {
+	@show()
+}
+
+templ show() {
+	<div class={ ctx.Value(contextClass) }>
+		Display
+	</div>
+}
