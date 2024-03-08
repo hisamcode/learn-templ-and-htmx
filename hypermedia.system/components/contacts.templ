@@ -1,0 +1,51 @@
+package components
+
+templ Contacts(contacts []string) {
+	for _, contact := range contacts {
+		<div>{ contact }</div>
+	}
+}
+
+templ ButtonGetContact() {
+	<div id="main">
+		<button
+			hx-get="/contacts"
+			hx-target="#main"
+			hx-swap="innerHTML"
+			hx-trigger="click, keyup[ctrlKey && key == 'b'] from:body"
+		>
+			Get the contacts
+		</button>
+	</div>
+}
+
+templ ButtonGetContact2() {
+	<div id="main">
+		<form>
+			<label for="search">Search Contacts:</label>
+			<input type="search" name="q" id="search" placeholder="Search contacts"/>
+			<button
+				hx-post="/contacts"
+				hx-target="#main"
+			>
+				Get the contacts
+			</button>
+			<div hx-post="/contacts" hx-target="#main">div button</div>
+		</form>
+	</div>
+}
+
+templ ButtonGetContact3() {
+	// without form
+	<div id="main">
+		<label for="search">Search Contacts:</label>
+		<input type="search" name="q" id="search2" placeholder="Search contacts"/>
+		<button
+			hx-post="/contacts"
+			hx-target="#main"
+			hx-include="#search2"
+		>
+			Get the contacts
+		</button>
+	</div>
+}
