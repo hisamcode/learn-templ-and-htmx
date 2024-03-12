@@ -29,6 +29,18 @@ func main() {
 		components.Layout("htmx", cs).Render(r.Context(), w)
 	})
 
+	mux.HandleFunc("GET /boosted-link", func(w http.ResponseWriter, r *http.Request) {
+		cs := []templ.Component{
+			components.BoostedLink(),
+		}
+
+		components.Layout("boosted link", cs).Render(r.Context(), w)
+	})
+
+	mux.HandleFunc("GET /settings", func(w http.ResponseWriter, r *http.Request) {
+		components.PageSettings().Render(r.Context(), w)
+	})
+
 	fmt.Println("listen on 127.0.0.1:8000")
 	if err := http.ListenAndServe("127.0.0.1:8000", mux); err != nil {
 		panic(err)

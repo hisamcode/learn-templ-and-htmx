@@ -4,7 +4,7 @@ g:
 gr:
 	cd ./hypermedia.system/components && templ generate && cd ../ && go run cmd/main.go
 
-runhs:
+r:
 	cd ./hypermedia.system && go run cmd/main.go
 
 hs:
