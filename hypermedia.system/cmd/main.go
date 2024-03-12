@@ -41,6 +41,15 @@ func main() {
 		components.PageSettings().Render(r.Context(), w)
 	})
 
+	mux.HandleFunc("GET /boosted-forms", func(w http.ResponseWriter, r *http.Request) {
+		components.BoostedForm().Render(r.Context(), w)
+	})
+
+	mux.HandleFunc("POST /message", func(w http.ResponseWriter, r *http.Request) {
+		msg := r.FormValue("message")
+		w.Write([]byte(msg))
+	})
+
 	fmt.Println("listen on 127.0.0.1:8000")
 	if err := http.ListenAndServe("127.0.0.1:8000", mux); err != nil {
 		panic(err)

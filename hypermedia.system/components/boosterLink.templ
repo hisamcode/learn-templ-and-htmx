@@ -2,8 +2,16 @@ package components
 
 templ BoostedLink() {
 	<a href="/settings" hx-boost="true">Settings</a>
+	<a href="/boosted-forms" hx-boost="true">boosted forms</a>
 }
 
 templ PageSettings() {
 	<h1>Settings</h1>
+}
+
+templ BoostedForm() {
+	<form action="/message" method="post" hx-boost="true">
+		<input type="text" name="message" placeholder="Enter A Message..."/>
+		<button>Post Your Message</button>
+	</form>
 }
