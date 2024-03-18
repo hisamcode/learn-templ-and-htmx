@@ -7,9 +7,13 @@ templ Layout(title string, contents []templ.Component) {
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>{ title }</title>
-			<script src="./js/htmx.min.js"></script>
+			<script src="/js/htmx.min.js"></script>
 		</head>
-		<body>
+		<body hx-boost="true">
+			<div>
+				<a href="/contacts">contacts</a>
+			</div>
+			<hr/>
 			for _, content := range contents {
 				@content
 			}

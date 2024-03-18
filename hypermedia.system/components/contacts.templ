@@ -1,9 +1,21 @@
 package components
 
-templ Contacts(contacts []string) {
-	for _, contact := range contacts {
-		<div>{ contact }</div>
+import "fmt"
+
+type Contact struct {
+	ID   int
+	Name string
+}
+
+templ Contacts(contacts []Contact) {
+	for _, c := range contacts {
+		<div>
+			<a href={ templ.URL(fmt.Sprintf("/contacts/%d", c.ID)) }>{ c.Name }</a>
+		</div>
 	}
+	<div>
+		<a href="/contacts/new">New contact</a>
+	</div>
 }
 
 templ ButtonGetContact() {
@@ -47,5 +59,35 @@ templ ButtonGetContact3() {
 		>
 			Get the contacts
 		</button>
+	</div>
+}
+
+templ ContactNew() {
+	<div>
+		<form>
+			<div>
+				<label for="id">ID</label>
+				<input type="text" id="id" name="id"/>
+			</div>
+			<div>
+				<label for="name">Name</label>
+				<input type="text" id="name" name="name"/>
+			</div>
+			<button hx-post="/contacts" hx-target="body">Add Contact</button>
+		</form>
+	</div>
+}
+
+templ PageContact(contact Contact) {
+	<div>
+		<div>
+			Name : { contact.Name }
+		</div>
+		<button
+			hx-target="body"
+			hx-confirm="Are you sure want to delete this contact?"
+			hx-push-url="true"
+			hx-delete={ fmt.Sprintf("/contacts/%d", contact.ID) }
+		>Delete Contact</button>
 	</div>
 }

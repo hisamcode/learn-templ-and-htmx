@@ -1,23 +1,83 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/a-h/templ"
 	"github.com/hisamcode/try-htmx/hs/components"
 )
 
+var Contacts []components.Contact
+
 func main() {
+
 	mux := http.NewServeMux()
 	mux.Handle("/", http.FileServer(http.Dir("../vendor/")))
 
 	mux.HandleFunc("GET /contacts", func(w http.ResponseWriter, r *http.Request) {
-		components.Contacts([]string{"contact1", "contacts 2"}).Render(r.Context(), w)
+		components.Layout("Contacts", []templ.Component{components.Contacts(Contacts)}).Render(r.Context(), w)
+	})
+
+	mux.HandleFunc("GET /contacts/new", func(w http.ResponseWriter, r *http.Request) {
+		components.Layout("New Contact", []templ.Component{components.ContactNew()}).Render(r.Context(), w)
+	})
+
+	mux.HandleFunc("DELETE /contacts/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(r.PathValue("id"))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		key, err := findKeyContactById(id)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		newContacts := []components.Contact{}
+		newContacts = append(newContacts, Contacts[:*key]...)
+		newContacts = append(newContacts, Contacts[*key+1:]...)
+		Contacts = newContacts
+
+		// components.Layout("Contacts", []templ.Component{components.Contacts(Contacts)}).Render(r.Context(), w)
+		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
+
 	})
 
 	mux.HandleFunc("POST /contacts", func(w http.ResponseWriter, r *http.Request) {
-		components.Contacts([]string{"post 1", "post 2", r.FormValue("q")}).Render(r.Context(), w)
+		id, err := strconv.Atoi(r.PostFormValue("id"))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		Name := r.PostFormValue("name")
+
+		fmt.Println("create contacts", id, Name)
+
+		Contacts = append(Contacts, components.Contact{ID: id, Name: Name})
+		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
+		// components.Contacts([]string{"post 1", "post 2", r.FormValue("q")}).Render(r.Context(), w)
+	})
+
+	mux.HandleFunc("GET /contacts/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(r.PathValue("id"))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		contact, err := findContactById(id)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		components.PageContact(*contact).Render(r.Context(), w)
+
 	})
 
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
@@ -54,4 +114,24 @@ func main() {
 	if err := http.ListenAndServe("127.0.0.1:8000", mux); err != nil {
 		panic(err)
 	}
+}
+
+func findKeyContactById(id int) (*int, error) {
+	for k, v := range Contacts {
+		if v.ID == id {
+			return &k, nil
+		}
+	}
+	return nil, errors.New("not found")
+
+}
+
+func findContactById(id int) (*components.Contact, error) {
+	for _, v := range Contacts {
+		if v.ID == id {
+			return &v, nil
+		}
+	}
+
+	return nil, errors.New("not found")
 }

@@ -23,7 +23,7 @@ func BoostedLink() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/boosted-forms\" hx-boost=\"true\">boosted forms</a><div hx-boost=\"true\"><a href=\"/settings\">Settings</a> <a href=\"/contact\">boosted forms</a> <a href=\"/help\">boosted forms</a></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/boosted-forms\" hx-boost=\"true\">boosted forms</a><div><a href=\"/settings\">Settings</a> <a href=\"/contact\">contact</a> <a href=\"/help\">help</a> <a href=\"/contacts/new\">Add Contact</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
