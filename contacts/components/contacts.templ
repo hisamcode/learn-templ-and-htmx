@@ -5,16 +5,53 @@ import "strconv"
 
 templ PageListContact(contacts Contacts) {
 	<div>
-		for _, contact := range contacts {
+		for id, contact := range contacts {
 			<div>
 				<div>
-					{ strconv.Itoa(contact.ID) }
+					{ strconv.Itoa(id) }
 				</div>
 				<div>
-					<a href={ templ.URL(fmt.Sprintf("/%d", contact.ID)) }>{ contact.Name } </a>
+					{ contact.Email }
+				</div>
+				<div>
+					<a href={ templ.URL(fmt.Sprintf("/%d", id)) }>{ contact.Name } </a>
 				</div>
 			</div>
 			<hr/>
 		}
+	</div>
+}
+
+templ PageCreateContact(form FormData) {
+	<div>
+		<form>
+			<div>
+				<label for="name">Name</label>
+				<input
+					type="text"
+					name="name"
+					id="name"
+					value={ form.Values["name"] }
+				/>
+				if v, ok := form.Errors["name"]; ok {
+					<span>{ v }</span>
+				}
+			</div>
+			<div>
+				<label for="email">Email</label>
+				<input
+					type="text"
+					name="email"
+					id="email"
+					value={ form.Values["email"] }
+				/>
+				if v, ok := form.Errors["email"]; ok {
+					<span>{ v }</span>
+				}
+			</div>
+			<div>
+				<button hx-post="/" hx-target="body" hx-push-url="true">Create</button>
+			</div>
+		</form>
 	</div>
 }
