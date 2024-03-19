@@ -49,16 +49,36 @@ func main() {
 	})
 
 	mux.HandleFunc("POST /contacts", func(w http.ResponseWriter, r *http.Request) {
-		id, err := strconv.Atoi(r.PostFormValue("id"))
+		if err := r.ParseForm(); err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		if !r.PostForm.Has("id") {
+			fmt.Println("required id")
+			return
+		}
+
+		id := r.PostForm.Get("id")
+		if len(id) < 1 {
+			fmt.Println("id must > 1")
+			return
+		}
+
+		newId, err := strconv.Atoi(id)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		Name := r.PostFormValue("name")
 
-		fmt.Println("create contacts", id, Name)
+		if !r.PostForm.Has("name") {
+			fmt.Println("required name")
+		}
 
-		Contacts = append(Contacts, components.Contact{ID: id, Name: Name})
+		Name := r.PostForm.Get("name")
+		fmt.Println("create contacts", newId, Name)
+
+		Contacts = append(Contacts, components.Contact{ID: newId, Name: Name})
 		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
 		// components.Contacts([]string{"post 1", "post 2", r.FormValue("q")}).Render(r.Context(), w)
 	})
