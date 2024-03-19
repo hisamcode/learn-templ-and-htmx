@@ -8,7 +8,7 @@ templ PageListContact(contacts Contacts) {
 		for id, contact := range contacts {
 			<div>
 				<div>
-					{ strconv.Itoa(id) }
+					{ strconv.Itoa(id) } -- { strconv.Itoa(contact.ID) }
 				</div>
 				<div>
 					{ contact.Email }
@@ -53,5 +53,20 @@ templ PageCreateContact(form FormData) {
 				<button hx-post="/" hx-target="body" hx-push-url="true">Create</button>
 			</div>
 		</form>
+	</div>
+}
+
+templ PageDetailContact(contact Contact) {
+	<div>
+		<div>
+			<a href={ templ.URL(fmt.Sprintf("/%d", contact.ID)) }>{ contact.Name }</a>
+		</div>
+		<div>
+			Email : { contact.Email }
+		</div>
+		<div>
+			<button hx-get={ string(templ.URL(fmt.Sprintf("/%d/edit", contact.ID))) }>Edit</button>
+			<button hx-delete={ string(templ.URL(fmt.Sprintf("/%d", contact.ID))) }>Delete</button>
+		</div>
 	</div>
 }

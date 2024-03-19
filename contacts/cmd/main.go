@@ -3,6 +3,7 @@ package main
 import (
 	"log/slog"
 	"net/http"
+	"strconv"
 
 	"github.com/a-h/templ"
 	"github.com/hisamcode/try-htmx/contacts/components"
@@ -16,6 +17,22 @@ type App struct {
 // listHandler list contacts
 func (app App) listHandler(w http.ResponseWriter, r *http.Request) {
 	app.render(components.PageListContact(*app.contacts), w, r)
+}
+
+func (app App) detailHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if id == "" {
+		app.log.Info("Cant find id %d", id)
+		return
+	}
+
+	newId, err := strconv.Atoi(id)
+	if err != nil {
+		app.log.Info("Cant convert int to id, err %v", err)
+		return
+	}
+
+	app.render(components.PageDetailContact((*app.contacts)[newId]), w, r)
 }
 
 // createPageHandler page create contact
@@ -63,6 +80,7 @@ func main() {
 	mux.Handle("/", http.FileServer(http.Dir("../vendor/")))
 
 	mux.HandleFunc("GET /{$}", app.listHandler)
+	mux.HandleFunc("GET /{id}", app.detailHandler)
 	mux.HandleFunc("GET /create", app.createPageHandler)
 	mux.HandleFunc("POST /{$}", app.createHandler)
 
