@@ -1,0 +1,20 @@
+package components
+
+import "fmt"
+import "strconv"
+
+templ PageListContact(contacts Contacts) {
+	<div>
+		for _, contact := range contacts {
+			<div>
+				<div>
+					{ strconv.Itoa(contact.ID) }
+				</div>
+				<div>
+					<a href={ templ.URL(fmt.Sprintf("/%d", contact.ID)) }>{ contact.Name } </a>
+				</div>
+			</div>
+			<hr/>
+		}
+	</div>
+}
