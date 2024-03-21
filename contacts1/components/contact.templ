@@ -1,0 +1,149 @@
+package components
+
+import (
+	"fmt"
+)
+
+templ PageList(contacts Contacts) {
+	<div>
+		for _, v := range contacts.Data {
+			<div>
+				Name: <a href={ templ.URL(fmt.Sprintf("/contacts/%d", v.ID)) }>{ v.Name }</a>
+			</div>
+			<div>
+				Email: { v.Email }
+			</div>
+			<div>
+				<button
+					hx-push-url="true"
+					hx-target="body"
+					hx-get={ string(templ.URL(fmt.Sprintf("/contacts/%d/edit", v.ID))) }
+				>Edit</button>
+				<button
+					hx-push-url="true"
+					hx-target="body"
+					hx-delete={ string(templ.URL(fmt.Sprintf("/contacts/%d", v.ID))) }
+				>Delete</button>
+			</div>
+			<hr/>
+		}
+	</div>
+}
+
+templ PageDetail(contact Contact) {
+	<div>
+		<div>
+			ID : { fmt.Sprintf("%d", contact.ID) }
+		</div>
+		<div>
+			Name : { contact.Name }
+		</div>
+		<div>
+			Email : { contact.Email }
+		</div>
+		<div>
+			<button
+				hx-push-url="true"
+				hx-target="body"
+				hx-get={ string(templ.URL(fmt.Sprintf("/contacts/%d/edit", contact.ID))) }
+			>Edit</button>
+			<button
+				hx-push-url="true"
+				hx-target="body"
+				hx-delete={ string(templ.URL(fmt.Sprintf("/contacts/%d", contact.ID))) }
+			>Delete</button>
+		</div>
+	</div>
+}
+
+templ PageCreate(form FormContact) {
+	<div>
+		<form>
+			<div>
+				<label for="name">Name</label>
+				<input type="text" name="name" id="name" value={ form.Values["name"] }/>
+				if v, ok := form.Errors["name"]; ok {
+					<span class="error">{ v }</span>
+				}
+			</div>
+			<div>
+				<label for="email">Email</label>
+				<input type="text" name="email" id="email" value={ form.Values["email"] }/>
+				if v, ok := form.Errors["email"]; ok {
+					<span class="error">{ v }</span>
+				}
+			</div>
+			<div>
+				<button
+					hx-push-url="true"
+					hx-post="/contacts"
+					hx-target="body"
+				>
+					Create
+				</button>
+			</div>
+		</form>
+	</div>
+}
+
+templ PageEdit(id int, form FormContact) {
+	<div>
+		<form>
+			<div>
+				<label for="name">Name</label>
+				<input
+					type="text"
+					name="name"
+					id="name"
+					value={ form.Values["name"] }
+				/>
+				if v, ok := form.Errors["name"]; ok {
+					<span class="error">{ v }</span>
+				}
+			</div>
+			<div>
+				<label for="email">Email</label>
+				<input
+					type="text"
+					name="email"
+					id="email"
+					value={ form.Values["email"] }
+					hx-put={ string(templ.URL(fmt.Sprintf("/contacts/%d/email", id))) }
+					hx-target="next .error"
+					hx-trigger="change, keyup delay:1000ms changed"
+				/>
+				<span class="error">{ form.Errors["email"] }</span>
+			</div>
+			<div>
+				<button
+					hx-push-url="true"
+					hx-put={ string(templ.URL(fmt.Sprintf("/contacts/%d", id))) }
+					hx-target="body"
+				>
+					Edit
+				</button>
+			</div>
+		</form>
+	</div>
+}
+
+templ Layout(title string, content templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ title }</title>
+			<script src="/js/htmx.min.js"></script>
+		</head>
+		<body>
+			<div hx-boost="true">
+				<a href="/">Home</a>
+				<a href="/contacts/create">Create</a>
+			</div>
+			<div>
+				@content
+			</div>
+		</body>
+	</html>
+}
