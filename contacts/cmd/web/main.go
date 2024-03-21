@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
+	"slices"
 	"strconv"
 
 	"github.com/a-h/templ"
@@ -22,7 +24,7 @@ func (app App) listHandler(w http.ResponseWriter, r *http.Request) {
 func (app App) detailHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
-		app.log.Info("Cant find id %d", id)
+		app.log.Info("required id")
 		return
 	}
 
@@ -62,6 +64,25 @@ func (app App) createHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (app App) deleteHandler(w http.ResponseWriter, r *http.Request) {
+	pathID := r.PathValue("id")
+	if pathID == "" {
+		app.log.Info("id required")
+		return
+	}
+
+	id, err := strconv.Atoi(pathID)
+	if err != nil {
+		app.log.Info(err.Error())
+		return
+	}
+
+	(*app.contacts) = slices.Delete(*app.contacts, id, id+1)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+}
+
 // render render layout
 func (app App) render(content templ.Component, w http.ResponseWriter, r *http.Request) {
 	components.Layout(content).Render(r.Context(), w)
@@ -80,12 +101,19 @@ func main() {
 	mux.Handle("/", http.FileServer(http.Dir("../vendor/")))
 
 	mux.HandleFunc("GET /{$}", app.listHandler)
-	mux.HandleFunc("GET /{id}", app.detailHandler)
 	mux.HandleFunc("GET /create", app.createPageHandler)
+	mux.HandleFunc("GET /{id}", app.detailHandler)
 	mux.HandleFunc("POST /{$}", app.createHandler)
+	mux.HandleFunc("DELETE /{id}", app.deleteHandler)
 
-	app.log.Info("listening on 127.0.0.1:8000")
-	err := http.ListenAndServe("127.0.0.1:8000", mux)
+	var handler http.Handler = mux
+
+	server := new(http.Server)
+	server.Addr = "127.0.0.1:8000"
+	server.Handler = handler
+
+	app.log.Info(fmt.Sprintf("listening on %s", server.Addr))
+	err := server.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}

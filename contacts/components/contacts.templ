@@ -65,8 +65,15 @@ templ PageDetailContact(contact Contact) {
 			Email : { contact.Email }
 		</div>
 		<div>
-			<button hx-get={ string(templ.URL(fmt.Sprintf("/%d/edit", contact.ID))) }>Edit</button>
-			<button hx-delete={ string(templ.URL(fmt.Sprintf("/%d", contact.ID))) }>Delete</button>
+			<button
+				hx-get={ string(templ.URL(fmt.Sprintf("/%d/edit", contact.ID))) }
+			>Edit</button>
+			<button
+				hx-push-url="true"
+				hx-confirm="Are you sure want to delete this contact?"
+				hx-target="body"
+				hx-delete={ string(templ.URL(fmt.Sprintf("/%d", contact.ID))) }
+			>Delete</button>
 		</div>
 	</div>
 }
