@@ -2,6 +2,8 @@ package components
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 )
 
 type Contact struct {
@@ -43,9 +45,9 @@ func (c *Contacts) Init() {
 	c.Data = append(c.Data, NewContact("maulana", "maulana@gmail.com"))
 	c.Data = append(c.Data, NewContact("pintu", "pintu@gmail.com"))
 
-	// for i := 0; i < 100; i++ {
-	// 	c.Data = append(c.Data, NewContact(fmt.Sprintf("user %d", i), fmt.Sprintf("email%d@gmail.com", i)))
-	// }
+	for i := 0; i < 20; i++ {
+		c.Data = append(c.Data, NewContact(fmt.Sprintf("user %d", i), fmt.Sprintf("email%d@gmail.com", i)))
+	}
 }
 
 func (c *Contacts) New(name string, email string) {
@@ -96,4 +98,34 @@ func (c *Contacts) FindByEmail(email string) (*Contact, error) {
 	}
 
 	return nil, errors.New("not found")
+}
+
+func (c Contacts) All(page int) Contacts {
+	contacts := Contacts{}
+	showOnThePage := 10
+	offset := 0
+	if page > 1 {
+		// bug ketika lebih dari total c.Data
+		if (page-1)*showOnThePage > len(c.Data) {
+			return contacts
+		}
+		offset = (page * showOnThePage) - showOnThePage
+	}
+	// awal nya soalnya 0
+	if page <= 1 {
+		page = 1
+	}
+
+	contacts.Data = append(contacts.Data, c.Data[offset:page*showOnThePage]...)
+	return contacts
+}
+
+func (c Contacts) Search(search string) Contacts {
+	contacts := Contacts{}
+	for _, v := range c.Data {
+		if strings.Contains(v.Email, search) || strings.Contains(v.Name, search) {
+			contacts.Data = append(contacts.Data, v)
+		}
+	}
+	return contacts
 }

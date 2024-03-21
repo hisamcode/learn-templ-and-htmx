@@ -15,7 +15,20 @@ type App struct {
 }
 
 func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
-	app.render(components.PageList(*app.contacts), w, r)
+	q := r.URL.Query()
+	page, err := strconv.Atoi(q.Get("page"))
+	if err != nil {
+		page = 1
+	}
+	search := q.Get("q")
+	var contacts components.Contacts
+	if len(search) > 0 {
+		contacts = app.contacts.Search(search)
+	} else {
+		contacts = app.contacts.All(page)
+	}
+
+	app.render(components.PageList(contacts, page), w, r)
 
 }
 func (app App) detailPageHandler(w http.ResponseWriter, r *http.Request) {

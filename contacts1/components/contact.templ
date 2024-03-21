@@ -4,29 +4,41 @@ import (
 	"fmt"
 )
 
-templ PageList(contacts Contacts) {
+templ PageList(contacts Contacts, page int) {
 	<div>
-		for _, v := range contacts.Data {
-			<div>
-				Name: <a href={ templ.URL(fmt.Sprintf("/contacts/%d", v.ID)) }>{ v.Name }</a>
-			</div>
-			<div>
-				Email: { v.Email }
-			</div>
-			<div>
-				<button
-					hx-push-url="true"
-					hx-target="body"
-					hx-get={ string(templ.URL(fmt.Sprintf("/contacts/%d/edit", v.ID))) }
-				>Edit</button>
-				<button
-					hx-push-url="true"
-					hx-target="body"
-					hx-delete={ string(templ.URL(fmt.Sprintf("/contacts/%d", v.ID))) }
-				>Delete</button>
-			</div>
-			<hr/>
-		}
+		<div>
+			for _, v := range contacts.Data {
+				<div>
+					Name: <a href={ templ.URL(fmt.Sprintf("/contacts/%d", v.ID)) }>{ v.Name }</a>
+				</div>
+				<div>
+					Email: { v.Email }
+				</div>
+				<div>
+					<button
+						hx-push-url="true"
+						hx-target="body"
+						hx-get={ string(templ.URL(fmt.Sprintf("/contacts/%d/edit", v.ID))) }
+					>Edit</button>
+					<button
+						hx-push-url="true"
+						hx-target="body"
+						hx-delete={ string(templ.URL(fmt.Sprintf("/contacts/%d", v.ID))) }
+					>Delete</button>
+				</div>
+				<hr/>
+			}
+		</div>
+		<div>
+			<span hx-boost="true">
+				if page > 1 {
+					<a href={ templ.URL(fmt.Sprintf("/?page=%d", page-1)) }>Previous</a>
+				}
+				if len(contacts.Data) == 10 {
+					<a href={ templ.URL(fmt.Sprintf("/?page=%d", page+1)) }>Next</a>
+				}
+			</span>
+		</div>
 	</div>
 }
 
