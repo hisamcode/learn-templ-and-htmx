@@ -4,8 +4,11 @@ import (
 	"fmt"
 )
 
-templ PageList(contacts Contacts, page int) {
+templ PageList(contacts Contacts, page int, form Form) {
 	<div>
+		<div>
+			@MainSearchForm(form)
+		</div>
 		<div id="body-each">
 			for _, v := range contacts.Data {
 				<div class="each">
@@ -33,16 +36,18 @@ templ PageList(contacts Contacts, page int) {
 			<div class="each" hx-boost="true">
 				// ketika data nya di akhir, hapus load more
 				// kenapa, karena bakal terus terusan nge request soalnya
-				if contacts.Data[len(contacts.Data)-1].ID != 0 {
-					<button
-						hx-target="closest .each"
-						hx-trigger="revealed"
-						hx-swap="outerHTML"
-						hx-select="#body-each > .each"
-						hx-get={ string(templ.URL(fmt.Sprintf("/?page=%d", page+1))) }
-					>
-						Load more
-					</button>
+				if len(contacts.Data) > 0 {
+					if contacts.Data[len(contacts.Data)-1].ID != 0 && len(form.Values["q"]) < 1 {
+						<button
+							hx-target="closest .each"
+							hx-trigger="revealed"
+							hx-swap="outerHTML"
+							hx-select="#body-each > .each"
+							hx-get={ string(templ.URL(fmt.Sprintf("/?page=%d", page+1))) }
+						>
+							Load more
+						</button>
+					}
 				}
 			</div>
 		</div>
@@ -58,6 +63,22 @@ templ PageList(contacts Contacts, page int) {
 		// 	</span>
 		// </div>
 	</div>
+}
+
+templ MainSearchForm(form Form) {
+	<form hx-boost="true" action="/" method="get" class="tool-bar">
+		<label for="search">Search Term</label>
+		<input
+			type="search"
+			id="search"
+			name="q"
+			value={ form.Values["q"] }
+			hx-target="body"
+			hx-get={ string(templ.URL(fmt.Sprintf("/"))) }
+			hx-trigger="search, keyup delay:500ms changed"
+		/>
+		<input type="submit" value="Search"/>
+	</form>
 }
 
 templ PageDetail(contact Contact) {
@@ -86,7 +107,7 @@ templ PageDetail(contact Contact) {
 	</div>
 }
 
-templ PageCreate(form FormContact) {
+templ PageCreate(form Form) {
 	<div>
 		<form>
 			<div>
@@ -98,7 +119,12 @@ templ PageCreate(form FormContact) {
 			</div>
 			<div>
 				<label for="email">Email</label>
-				<input type="text" name="email" id="email" value={ form.Values["email"] }/>
+				<input
+					type="text"
+					name="email"
+					id="email"
+					value={ form.Values["email"] }
+				/>
 				if v, ok := form.Errors["email"]; ok {
 					<span class="error">{ v }</span>
 				}
@@ -116,7 +142,7 @@ templ PageCreate(form FormContact) {
 	</div>
 }
 
-templ PageEdit(id int, form FormContact) {
+templ PageEdit(id int, form Form) {
 	<div>
 		<form>
 			<div>
@@ -138,9 +164,9 @@ templ PageEdit(id int, form FormContact) {
 					name="email"
 					id="email"
 					value={ form.Values["email"] }
-					hx-put={ string(templ.URL(fmt.Sprintf("/contacts/%d/email", id))) }
+					hx-get={ string(templ.URL(fmt.Sprintf("/contacts/%d/email", id))) }
 					hx-target="next .error"
-					hx-trigger="change, keyup delay:1000ms changed"
+					hx-trigger="change, keyup delay:500ms changed"
 				/>
 				<span class="error">{ form.Errors["email"] }</span>
 			</div>

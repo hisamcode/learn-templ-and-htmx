@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/a-h/templ"
@@ -20,15 +22,16 @@ func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		page = 1
 	}
-	search := q.Get("q")
+	form := components.NewFormContact()
+	form.Values["q"] = r.URL.Query().Get("q")
 	var contacts components.Contacts
-	if len(search) > 0 {
-		contacts = app.contacts.Search(search)
+	if len(form.Values["q"]) > 0 {
+		contacts = app.contacts.Search(form.Values["q"])
 	} else {
 		contacts = app.contacts.All(page)
 	}
 
-	app.render(components.PageList(contacts, page), w, r)
+	app.render(components.PageList(contacts, page, *form), w, r)
 
 }
 func (app App) detailPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -124,7 +127,7 @@ func (app App) validateEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email := r.PostFormValue("email")
+	email := r.URL.Query().Get("email")
 	if email == "" || len(email) < 1 {
 		fmt.Fprint(w, "email cant be empty")
 		return
@@ -225,7 +228,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	http.Handle("/", http.FileServer(http.Dir("../vendor/")))
+	mux.Handle("/", http.FileServer(http.Dir(vendorFolder())))
 
 	mux.HandleFunc("GET /{$}", app.listPageHandler)
 	mux.HandleFunc("GET /contacts/{id}", app.detailPageHandler)
@@ -235,7 +238,7 @@ func main() {
 	mux.HandleFunc("GET /contacts/{id}/edit", app.editPageHandler)
 	mux.HandleFunc("PUT /contacts/{id}", app.editHandler)
 	// validate email
-	mux.HandleFunc("PUT /contacts/{id}/email", app.validateEmail)
+	mux.HandleFunc("GET /contacts/{id}/email", app.validateEmail)
 
 	var handler http.Handler = mux
 
@@ -248,4 +251,16 @@ func main() {
 		panic(err)
 	}
 
+}
+
+func vendorFolder() string {
+	p, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	p = filepath.Clean(filepath.Join(p, ".."))
+	p = filepath.Join(p, "vendor")
+
+	return p
 }

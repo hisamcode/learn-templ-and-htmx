@@ -24,13 +24,13 @@ func NewContact(name string, email string) Contact {
 
 }
 
-type FormContact struct {
+type Form struct {
 	Values map[string]string
 	Errors map[string]string
 }
 
-func NewFormContact() *FormContact {
-	return &FormContact{
+func NewFormContact() *Form {
+	return &Form{
 		Values: make(map[string]string),
 		Errors: make(map[string]string),
 	}
@@ -122,9 +122,15 @@ func (c Contacts) All(page int) Contacts {
 
 func (c Contacts) Search(search string) Contacts {
 	contacts := Contacts{}
+	count := 0
+out:
 	for _, v := range c.Data {
 		if strings.Contains(v.Email, search) || strings.Contains(v.Name, search) {
+			if count > 5 {
+				break out
+			}
 			contacts.Data = append(contacts.Data, v)
+			count++
 		}
 	}
 	return contacts
