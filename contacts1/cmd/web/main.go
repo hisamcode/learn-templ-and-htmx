@@ -28,9 +28,17 @@ func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
 	var contacts components.Contacts
 	if len(form.Values["q"]) > 0 {
 		contacts = app.contacts.Search(form.Values["q"])
-		if r.Header["HX-Trigger"][0] == "search" {
-			// TODO: render only the rows here
+		hxTrigger, ok := r.Header[http.CanonicalHeaderKey("hx-trigger")]
+
+		if ok {
+			if hxTrigger[0] == "search" {
+
+			}
 		}
+
+		// if r.Header["HX-Trigger"][0] == "search" {
+		// 	// TODO: render only the rows here
+		// }
 
 	} else {
 		contacts = app.contacts.All(page)
