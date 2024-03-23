@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/a-h/templ"
 )
@@ -17,6 +18,7 @@ type App struct {
 }
 
 func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
+
 	q := r.URL.Query()
 	page, err := strconv.Atoi(q.Get("page"))
 	if err != nil {
@@ -28,26 +30,25 @@ func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
 	var contacts components.Contacts
 	if len(form.Values["q"]) > 0 {
 		contacts = app.contacts.Search(form.Values["q"])
-		hxTrigger, ok := r.Header[http.CanonicalHeaderKey("hx-trigger")]
-
-		if ok {
-			if hxTrigger[0] == "search" {
-				err := components.ListContact(contacts).Render(r.Context(), w)
-				if err != nil {
-					fmt.Println(err)
-				}
-				return
-			}
-		}
-
-		// if r.Header["HX-Trigger"][0] == "search" {
-		// 	// TODO: render only the rows here
-		// }
-
 	} else {
 		contacts = app.contacts.All(page)
 	}
 
+	hxTrigger, ok := r.Header[http.CanonicalHeaderKey("hx-trigger")]
+
+	if ok {
+		if hxTrigger[0] == "search" {
+			time.Sleep(500 * time.Millisecond)
+		}
+		// render only content not a whole page with header script css or anything
+		err = components.ListContact(contacts).Render(r.Context(), w)
+		if err != nil {
+			fmt.Println(err)
+		}
+		return
+	}
+
+	// render page normal
 	app.render(components.PageList(contacts, page, *form), w, r)
 
 }

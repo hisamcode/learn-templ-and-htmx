@@ -81,6 +81,14 @@ templ MainSearchForm(form Form) {
 			hx-get={ string(templ.URL(fmt.Sprintf("/"))) }
 			hx-trigger="search, keyup delay:500ms changed"
 			hx-push-url="true"
+			hx-indicator="#spinner"
+		/>
+		<img
+			style="width:25px; height:25px;"
+			class="htmx-indicator"
+			id="spinner"
+			src="/img/spinner.svg"
+			alt="Request in flight..."
 		/>
 		<input type="submit" value="Search"/>
 	</form>
