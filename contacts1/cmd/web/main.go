@@ -24,9 +24,14 @@ func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	form := components.NewFormContact()
 	form.Values["q"] = r.URL.Query().Get("q")
+
 	var contacts components.Contacts
 	if len(form.Values["q"]) > 0 {
 		contacts = app.contacts.Search(form.Values["q"])
+		if r.Header["HX-Trigger"][0] == "search" {
+			// TODO: render only the rows here
+		}
+
 	} else {
 		contacts = app.contacts.All(page)
 	}
