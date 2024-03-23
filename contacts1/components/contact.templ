@@ -78,7 +78,6 @@ templ MainSearchForm(form Form) {
 			name="q"
 			value={ form.Values["q"] }
 			hx-target="#body-each"
-			hx-select="#body-each .each"
 			hx-get={ string(templ.URL(fmt.Sprintf("/"))) }
 			hx-trigger="search, keyup delay:500ms changed"
 		/>

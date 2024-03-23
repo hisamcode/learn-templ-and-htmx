@@ -32,7 +32,11 @@ func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
 
 		if ok {
 			if hxTrigger[0] == "search" {
-
+				err := components.ListContact(contacts).Render(r.Context(), w)
+				if err != nil {
+					fmt.Println(err)
+				}
+				return
 			}
 		}
 
