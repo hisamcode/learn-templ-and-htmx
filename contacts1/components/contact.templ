@@ -80,6 +80,7 @@ templ MainSearchForm(form Form) {
 			hx-target="#body-each"
 			hx-get={ string(templ.URL(fmt.Sprintf("/"))) }
 			hx-trigger="search, keyup delay:500ms changed"
+			hx-push-url="true"
 		/>
 		<input type="submit" value="Search"/>
 	</form>
