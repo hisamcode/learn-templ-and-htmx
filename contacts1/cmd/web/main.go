@@ -42,7 +42,7 @@ func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// render only content not a whole page with header script css or anything
-		err = components.ListContact(contacts, page, *form, app.contacts.Count()).Render(r.Context(), w)
+		err = components.ListContact(contacts, page, *form).Render(r.Context(), w)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -50,7 +50,7 @@ func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// render page normal
-	app.render(components.PageList(contacts, page, *form, app.contacts.Count()), w, r)
+	app.render(components.PageList(contacts, page, *form), w, r)
 
 }
 func (app App) detailPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,12 @@ func (app App) editHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) render(content templ.Component, w http.ResponseWriter, r *http.Request) {
-	components.Layout("Contacts", content, app.contacts.Count()).Render(r.Context(), w)
+	components.Layout("Contacts", content).Render(r.Context(), w)
+}
+
+func (app App) Count(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(1 * time.Second)
+	fmt.Fprintf(w, "(%d total contacts)", app.contacts.Count())
 }
 
 func (app App) GetID(r *http.Request) (int, error) {
@@ -258,6 +263,7 @@ func main() {
 	mux.HandleFunc("PUT /contacts/{id}", app.editHandler)
 	// validate email
 	mux.HandleFunc("GET /contacts/{id}/email", app.validateEmail)
+	mux.HandleFunc("GET /contacts/count", app.Count)
 
 	var handler http.Handler = mux
 

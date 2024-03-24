@@ -4,13 +4,13 @@ import (
 	"fmt"
 )
 
-templ PageList(contacts Contacts, page int, form Form, count int) {
+templ PageList(contacts Contacts, page int, form Form) {
 	<div>
 		<div>
 			@MainSearchForm(form)
 		</div>
 		<div id="body-each">
-			@ListContact(contacts, page, form, count)
+			@ListContact(contacts, page, form)
 		</div>
 		// next prev paging
 		// <div>
@@ -26,7 +26,7 @@ templ PageList(contacts Contacts, page int, form Form, count int) {
 	</div>
 }
 
-templ ListContact(contacts Contacts, page int, form Form, count int) {
+templ ListContact(contacts Contacts, page int, form Form) {
 	for _, v := range contacts.Data {
 		<div class="each">
 			<div>
@@ -83,13 +83,7 @@ templ MainSearchForm(form Form) {
 			hx-push-url="true"
 			hx-indicator="#spinner"
 		/>
-		<img
-			style="width:25px; height:25px;"
-			class="htmx-indicator"
-			id="spinner"
-			src="/img/spinner.svg"
-			alt="Request in flight..."
-		/>
+		@spinner()
 		<input type="submit" value="Search"/>
 	</form>
 }
@@ -196,7 +190,17 @@ templ PageEdit(id int, form Form) {
 	</div>
 }
 
-templ Layout(title string, content templ.Component, count int) {
+templ spinner() {
+	<img
+		style="width:25px; height:25px;"
+		class="htmx-indicator"
+		id="spinner"
+		src="/img/spinner.svg"
+		alt="Request in flight..."
+	/>
+}
+
+templ Layout(title string, content templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -209,7 +213,10 @@ templ Layout(title string, content templ.Component, count int) {
 			<div hx-boost="true">
 				<a href="/">Home</a>
 				|
-				<a href="/contacts/create">Create</a> <span>({ fmt.Sprintf("%d", count) } total Contacts)</span>
+				<a href="/contacts/create">Create</a>
+				<span hx-get="/contacts/count" hx-trigger="revealed">
+					@spinner()
+				</span>
 			</div>
 			<div>
 				@content
