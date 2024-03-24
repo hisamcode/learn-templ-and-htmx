@@ -45,6 +45,7 @@ templ ListContact(contacts Contacts, page int, form Form) {
 					hx-push-url="true"
 					hx-target="body"
 					hx-delete={ string(templ.URL(fmt.Sprintf("/contacts/%d", v.ID))) }
+					hx-confirm={ fmt.Sprintf("Are you sure want to delete this contact(%s) ?", v.Name) }
 				>Delete</button>
 			</div>
 			<hr/>
