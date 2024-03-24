@@ -4,30 +4,13 @@ import (
 	"fmt"
 )
 
-templ PageList(contacts Contacts, page int, form Form) {
+templ PageList(contacts Contacts, page int, form Form, count int) {
 	<div>
 		<div>
 			@MainSearchForm(form)
 		</div>
 		<div id="body-each">
-			@ListContact(contacts)
-			<div class="each" hx-boost="true">
-				// ketika data nya di akhir, hapus load more
-				// kenapa, karena bakal terus terusan nge request soalnya
-				if len(contacts.Data) > 0 {
-					if contacts.Data[len(contacts.Data)-1].ID != 0 && len(form.Values["q"]) < 1 {
-						<button
-							hx-target="closest .each"
-							hx-trigger="revealed"
-							hx-swap="outerHTML"
-							hx-select="#body-each > .each"
-							hx-get={ string(templ.URL(fmt.Sprintf("/?page=%d", page+1))) }
-						>
-							Load more
-						</button>
-					}
-				}
-			</div>
+			@ListContact(contacts, page, form, count)
 		</div>
 		// next prev paging
 		// <div>
@@ -43,7 +26,7 @@ templ PageList(contacts Contacts, page int, form Form) {
 	</div>
 }
 
-templ ListContact(contacts Contacts) {
+templ ListContact(contacts Contacts, page int, form Form, count int) {
 	for _, v := range contacts.Data {
 		<div class="each">
 			<div>
@@ -67,6 +50,23 @@ templ ListContact(contacts Contacts) {
 			<hr/>
 		</div>
 	}
+	<div class="each" hx-boost="true">
+		// ketika data nya di akhir, hapus load more
+		// kenapa, karena bakal terus terusan nge request soalnya
+		if len(contacts.Data) > 0 {
+			if contacts.Data[len(contacts.Data)-1].ID != 0 && len(form.Values["q"]) < 1 {
+				<button
+					hx-target="closest .each"
+					hx-trigger="revealed"
+					hx-swap="outerHTML"
+					hx-select="#body-each > .each"
+					hx-get={ string(templ.URL(fmt.Sprintf("/?page=%d", page+1))) }
+				>
+					Load more
+				</button>
+			}
+		}
+	</div>
 }
 
 templ MainSearchForm(form Form) {
@@ -196,7 +196,7 @@ templ PageEdit(id int, form Form) {
 	</div>
 }
 
-templ Layout(title string, content templ.Component) {
+templ Layout(title string, content templ.Component, count int) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -208,7 +208,8 @@ templ Layout(title string, content templ.Component) {
 		<body>
 			<div hx-boost="true">
 				<a href="/">Home</a>
-				<a href="/contacts/create">Create</a>
+				|
+				<a href="/contacts/create">Create</a> <span>({ fmt.Sprintf("%d", count) } total Contacts)</span>
 			</div>
 			<div>
 				@content

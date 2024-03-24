@@ -40,8 +40,9 @@ func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
 		if hxTrigger[0] == "search" {
 			time.Sleep(500 * time.Millisecond)
 		}
+
 		// render only content not a whole page with header script css or anything
-		err = components.ListContact(contacts).Render(r.Context(), w)
+		err = components.ListContact(contacts, page, *form, app.contacts.Count()).Render(r.Context(), w)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -49,7 +50,7 @@ func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// render page normal
-	app.render(components.PageList(contacts, page, *form), w, r)
+	app.render(components.PageList(contacts, page, *form, app.contacts.Count()), w, r)
 
 }
 func (app App) detailPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +217,7 @@ func (app App) editHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) render(content templ.Component, w http.ResponseWriter, r *http.Request) {
-	components.Layout("Contacts", content).Render(r.Context(), w)
+	components.Layout("Contacts", content, app.contacts.Count()).Render(r.Context(), w)
 }
 
 func (app App) GetID(r *http.Request) (int, error) {

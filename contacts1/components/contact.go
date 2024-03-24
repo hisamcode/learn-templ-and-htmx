@@ -135,3 +135,8 @@ out:
 	}
 	return contacts
 }
+
+func (c Contacts) Count() int {
+	return len(c.Data)
+
+}
