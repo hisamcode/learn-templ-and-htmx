@@ -122,6 +122,27 @@ func (app App) deleteHandler(w http.ResponseWriter, r *http.Request) {
 	// w.WriteHeader(http.StatusNoContent)
 	fmt.Fprint(w, "")
 }
+func (app App) bulkDeleteHandler(w http.ResponseWriter, r *http.Request) {
+
+	r.ParseForm()
+
+	selectedIDs, ok := r.PostForm["selected_contact_ids"]
+	if !ok {
+		return
+	}
+
+	for _, strID := range selectedIDs {
+		id, err := strconv.Atoi(strID)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		app.contacts.DeleteByID(id)
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+}
 func (app App) editPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := app.GetID(r)
@@ -266,6 +287,7 @@ func main() {
 	mux.HandleFunc("GET /contacts/create", app.createPageHandler)
 	mux.HandleFunc("POST /contacts", app.createHandler)
 	mux.HandleFunc("DELETE /contacts/{id}", app.deleteHandler)
+	mux.HandleFunc("POST /contacts/bulk-delete", app.bulkDeleteHandler)
 	mux.HandleFunc("GET /contacts/{id}/edit", app.editPageHandler)
 	mux.HandleFunc("PUT /contacts/{id}", app.editHandler)
 	// validate email

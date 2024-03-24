@@ -9,9 +9,9 @@ templ PageList(contacts Contacts, page int, form Form) {
 		<div>
 			@MainSearchForm(form)
 		</div>
-		<div id="body-each">
+		<form id="body-each">
 			@ListContact(contacts, page, form)
-		</div>
+		</form>
 		// next prev paging
 		// <div>
 		// 	<span hx-boost="true">
@@ -27,8 +27,18 @@ templ PageList(contacts Contacts, page int, form Form) {
 }
 
 templ ListContact(contacts Contacts, page int, form Form) {
+	<div>
+		<button
+			hx-post="/contacts/bulk-delete"
+			hx-confirm={ fmt.Sprint("Are you sure want to delete these contacts?") }
+			hx-target="body"
+		>Delete Selected Contacts</button>
+	</div>
 	for _, v := range contacts.Data {
 		<div class="each">
+			<div>
+				<input type="checkbox" name="selected_contact_ids" value={ fmt.Sprintf("%d", v.ID) }/>
+			</div>
 			<div>
 				Name: <a href={ templ.URL(fmt.Sprintf("/contacts/%d", v.ID)) }>{ v.Name }</a>
 			</div>
