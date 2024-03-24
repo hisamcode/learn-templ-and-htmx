@@ -113,7 +113,14 @@ func (app App) deleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	app.contacts.DeleteByID(id)
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	hxTrigger, ok := r.Header[http.CanonicalHeaderKey("hx-trigger")]
+	if ok && hxTrigger[0] == "delete-btn" {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	// w.WriteHeader(http.StatusNoContent)
+	fmt.Fprint(w, "")
 }
 func (app App) editPageHandler(w http.ResponseWriter, r *http.Request) {
 

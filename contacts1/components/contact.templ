@@ -42,8 +42,8 @@ templ ListContact(contacts Contacts, page int, form Form) {
 					hx-get={ string(templ.URL(fmt.Sprintf("/contacts/%d/edit", v.ID))) }
 				>Edit</button>
 				<button
-					hx-push-url="true"
-					hx-target="body"
+					hx-swap="outerHTML swap:1s"
+					hx-target="closest .each"
 					hx-delete={ string(templ.URL(fmt.Sprintf("/contacts/%d", v.ID))) }
 					hx-confirm={ fmt.Sprintf("Are you sure want to delete this contact(%s) ?", v.Name) }
 				>Delete</button>
@@ -107,9 +107,11 @@ templ PageDetail(contact Contact) {
 				hx-get={ string(templ.URL(fmt.Sprintf("/contacts/%d/edit", contact.ID))) }
 			>Edit</button>
 			<button
+				id="delete-btn"
 				hx-push-url="true"
 				hx-target="body"
 				hx-delete={ string(templ.URL(fmt.Sprintf("/contacts/%d", contact.ID))) }
+				hx-confirm={ fmt.Sprintf("Are you sure want to delete this contact(%s) ?", contact.Name) }
 			>Delete</button>
 		</div>
 	</div>
@@ -186,6 +188,13 @@ templ PageEdit(id int, form Form) {
 				>
 					Edit
 				</button>
+				<button
+					id="delete-btn"
+					hx-push-url="true"
+					hx-target="body"
+					hx-delete={ string(templ.URL(fmt.Sprintf("/contacts/%d", id))) }
+					hx-confirm={ fmt.Sprintf("Are you sure want to delete this contact(%s) ?", form.Values["name"]) }
+				>Delete</button>
 			</div>
 		</form>
 	</div>
@@ -209,6 +218,12 @@ templ Layout(title string, content templ.Component) {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>{ title }</title>
 			<script src="/js/htmx.min.js"></script>
+			<style>
+				.each.htmx-swapping {
+					opacity: 0;
+					transition: opacity 1s ease-out;
+				}
+			</style>
 		</head>
 		<body>
 			<div hx-boost="true">
