@@ -140,3 +140,17 @@ func (c Contacts) Count() int {
 	return len(c.Data)
 
 }
+
+func (c Contacts) Bytes() *[]byte {
+
+	b := []byte{}
+
+	for i, v := range c.Data {
+		b = append(b, []byte(fmt.Sprintf("id=%d|name=%s|email=%s", v.ID, v.Name, v.Email))...)
+		if i < len(c.Data)-1 {
+			b = append(b, []byte("\n")...)
+		}
+	}
+
+	return &b
+}
