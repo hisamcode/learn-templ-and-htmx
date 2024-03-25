@@ -16,7 +16,7 @@ func main() {
 
 	fmt.Println(string(*c.Bytes()))
 
-	a := archiver.Archiver{}
+	a := archiver.Archive{}
 	rd := strings.NewReader(string(*c.Bytes()))
 	// ctx, _ := context.WithCancel(context.Background())
 	go a.Run(context.Background(), rd)

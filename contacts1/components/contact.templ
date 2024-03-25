@@ -2,10 +2,14 @@ package components
 
 import (
 	"fmt"
+	archiver "contacts1/internal"
 )
 
 templ PageList(contacts Contacts, page int, form Form) {
 	<div>
+		<div>
+			@Archive(nil)
+		</div>
 		<div>
 			@MainSearchForm(form)
 		</div>
@@ -81,7 +85,7 @@ templ ListContact(contacts Contacts, page int, form Form) {
 }
 
 templ MainSearchForm(form Form) {
-	<form hx-boost="true" action="/" method="get" class="tool-bar">
+	<form hx-boost="true" method="get" class="tool-bar">
 		<label for="search">Search Term</label>
 		<input
 			type="search"
@@ -249,4 +253,14 @@ templ Layout(title string, content templ.Component) {
 			</div>
 		</body>
 	</html>
+}
+
+templ Archive(archive archiver.Archiver) {
+	<div
+		id="archive"
+		hx-target="this"
+		hx-swap="outerHTML"
+	>
+		<button hx-post="/contacts/archive">Download Contact Archive</button>
+	</div>
 }

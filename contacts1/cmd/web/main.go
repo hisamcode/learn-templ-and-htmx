@@ -2,19 +2,22 @@ package main
 
 import (
 	"contacts1/components"
+	archiver "contacts1/internal"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/a-h/templ"
 )
 
 type App struct {
-	contacts *components.Contacts
+	contacts     *components.Contacts
+	poolArchiver *[]*archiver.Archive
 }
 
 func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +57,7 @@ func (app App) listPageHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func (app App) detailPageHandler(w http.ResponseWriter, r *http.Request) {
-
+	fmt.Println(app.poolArchiver)
 	id, err := app.GetID(r)
 	if err != nil {
 		fmt.Println(err)
@@ -244,6 +247,28 @@ func (app App) editHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
+func (app App) archiveHandler(w http.ResponseWriter, r *http.Request) {
+	a := archiver.NewArchiver()
+
+	a.Status = archiver.Running
+
+	*app.poolArchiver = append(*app.poolArchiver, a)
+
+	a.Run(r.Context(), strings.NewReader(string(*app.contacts.Bytes())))
+
+	for _, v := range *app.poolArchiver {
+		fmt.Println(v)
+	}
+
+	// fmt.Println(*app.poolArchiver, a)
+
+	// rd := strings.NewReader(string(*app.contacts.Bytes()))
+
+	// go a.Run(r.Context(), rd)
+
+	components.Archive(a).Render(r.Context(), w)
+}
+
 func (app App) render(content templ.Component, w http.ResponseWriter, r *http.Request) {
 	components.Layout("Contacts", content).Render(r.Context(), w)
 }
@@ -273,7 +298,8 @@ func (app App) GetID(r *http.Request) (int, error) {
 func main() {
 
 	app := App{
-		contacts: &components.Contacts{},
+		contacts:     &components.Contacts{},
+		poolArchiver: &[]*archiver.Archive{},
 	}
 
 	app.contacts.Init()
@@ -293,6 +319,8 @@ func main() {
 	// validate email
 	mux.HandleFunc("GET /contacts/{id}/email", app.validateEmail)
 	mux.HandleFunc("GET /contacts/count", app.Count)
+
+	mux.HandleFunc("POST /contacts/archive", app.archiveHandler)
 
 	var handler http.Handler = mux
 

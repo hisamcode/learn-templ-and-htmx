@@ -36,20 +36,25 @@ func (s Status) String() string {
 	return []string{"Waiting", "Running", "Complete"}[s]
 }
 
-type Archiver struct {
+type Archiver interface {
+	Run(ctx context.Context, rd io.Reader)
+	RandomName(length int) string
+}
+
+type Archive struct {
 	Path     string
 	Status   Status
 	Progress int
 	Logs     []string
 }
 
-func NewArchiver() *Archiver {
-	return &Archiver{
+func NewArchiver() *Archive {
+	return &Archive{
 		Status: Waiting,
 	}
 }
 
-func (a *Archiver) Run(ctx context.Context, rd io.Reader) {
+func (a *Archive) Run(ctx context.Context, rd io.Reader) {
 	fmt.Println("running")
 	a.Status = Running
 	a.Logs = append(a.Logs, "Running archiver")
@@ -97,7 +102,7 @@ const Charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
-func (a Archiver) RandomName(length int) string {
+func (a Archive) RandomName(length int) string {
 
 	b := make([]byte, length)
 
@@ -111,5 +116,5 @@ func (a Archiver) RandomName(length int) string {
 type ID int
 
 type Archivers struct {
-	Data map[ID]Archiver
+	Pool []Archive
 }
