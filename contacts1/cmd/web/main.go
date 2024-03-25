@@ -16,7 +16,7 @@ import (
 )
 
 type App struct {
-	contacts     *components.Contacts
+	contacts     components.Contacts
 	poolArchiver *[]*archiver.Archive
 }
 
@@ -298,7 +298,7 @@ func (app App) GetID(r *http.Request) (int, error) {
 func main() {
 
 	app := App{
-		contacts:     &components.Contacts{},
+		contacts:     components.Contacts{},
 		poolArchiver: &[]*archiver.Archive{},
 	}
 
