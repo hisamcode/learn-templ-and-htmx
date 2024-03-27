@@ -464,7 +464,7 @@ func Header() templ.Component {
 			templ_7745c5c3_Var27 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-boost=\"true\"><a href=\"/contacts\">Contacts</a> <a href=\"/contacts/create\">Create Contact</a></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-boost=\"true\"><a href=\"/contacts\">Contacts</a> <a href=\"/contacts/create\">Create Contact</a> <span hx-get=\"/contacts/total\" hx-trigger=\"revealed\" hx-target=\"this\"><img width=\"20\" src=\"/img/spinner.svg\" alt=\"\" srcset=\"\"></span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -495,7 +495,7 @@ func buttonEditContact(id string) templ.Component {
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/contacts/%s/edit", id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 141, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 148, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
@@ -532,7 +532,7 @@ func buttonDeleteContact(id string, name string) templ.Component {
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/contacts/%s", id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 149, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 156, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {
@@ -545,7 +545,7 @@ func buttonDeleteContact(id string, name string) templ.Component {
 		var templ_7745c5c3_Var32 string
 		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Are you sure want to delete(%s)?", name))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 150, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 157, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 		if templ_7745c5c3_Err != nil {
@@ -582,7 +582,7 @@ func buttonViewContact(id string) templ.Component {
 		var templ_7745c5c3_Var34 string
 		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/contacts/%s", id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 158, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 165, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 		if templ_7745c5c3_Err != nil {
@@ -624,7 +624,7 @@ func paginationButton(pagination Pagination) templ.Component {
 			var templ_7745c5c3_Var36 string
 			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/contacts?page=%d", pagination.Page-1))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 169, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 176, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 			if templ_7745c5c3_Err != nil {
@@ -652,7 +652,7 @@ func paginationButton(pagination Pagination) templ.Component {
 			var templ_7745c5c3_Var37 string
 			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/contacts?page=%d", pagination.Page+1))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 179, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 186, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 			if templ_7745c5c3_Err != nil {

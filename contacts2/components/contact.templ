@@ -133,6 +133,13 @@ templ Header() {
 	<div hx-boost="true">
 		<a href="/contacts">Contacts</a>
 		<a href="/contacts/create">Create Contact</a>
+		<span
+			hx-get="/contacts/total"
+			hx-trigger="revealed"
+			hx-target="this"
+		>
+			<img width="20" src="/img/spinner.svg" alt="" srcset=""/>
+		</span>
 	</div>
 }
 

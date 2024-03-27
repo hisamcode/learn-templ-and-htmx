@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type App struct {
@@ -222,6 +223,11 @@ func (app App) deleteHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (app App) TotalHandler(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(1 * time.Second)
+	fmt.Fprintf(w, "Total %d contact", app.contacts.Count)
+}
+
 func main() {
 
 	contacts := new(components.Contacts)
@@ -245,6 +251,8 @@ func main() {
 	mux.HandleFunc("GET /contacts/{id}/edit", app.pageEditHandler)
 	mux.HandleFunc("PUT /contacts/{id}", app.editHandler)
 	mux.HandleFunc("DELETE /contacts/{id}", app.deleteHandler)
+
+	mux.HandleFunc("GET /contacts/total", app.TotalHandler)
 
 	var handler http.Handler = mux
 
