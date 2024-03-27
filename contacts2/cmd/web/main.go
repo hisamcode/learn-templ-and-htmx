@@ -6,6 +6,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type App struct {
@@ -122,11 +123,33 @@ func (app App) validateEmailHandler(w http.ResponseWriter, r *http.Request) {
 
 	contact := app.contacts.FindByEmail(email)
 	if contact != nil {
-		fmt.Fprint(w, "duplicate email")
-		return
+		hxTrigger := r.Header.Get("hx-trigger")
+		if hxTrigger == "edit-email" {
+			hxCurrentURL, ok := r.Header[http.CanonicalHeaderKey("hx-current-url")]
+			if !ok {
+				fmt.Fprint(w, "hx-current-url cant empty")
+				return
+			}
+
+			idStr := strings.Split(hxCurrentURL[0], "/")[4]
+			id, err := strconv.Atoi(idStr)
+			if err != nil {
+				fmt.Fprint(w, "Error convert string to int")
+				return
+			}
+			targetContact := app.contacts.FindByID(id)
+			if contact.Email != targetContact.Email {
+				fmt.Fprint(w, "duplicate email")
+				return
+			}
+		}
+
+		if hxTrigger == "create-email" {
+			fmt.Fprint(w, "duplicate email")
+			return
+		}
 	}
 
-	w.WriteHeader(http.StatusNoContent)
 	fmt.Fprint(w, "")
 }
 
@@ -151,10 +174,10 @@ func (app App) pageEditHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form := components.NewForm()
-	form.Values["ID"] = r.PostFormValue("ID")
-	form.Values["name"] = r.PostFormValue("name")
-	form.Values["email"] = r.PostFormValue("email")
-	form.Values["phone"] = r.PostFormValue("phone")
+	form.Values["ID"] = idStr
+	form.Values["name"] = contact.Name
+	form.Values["email"] = contact.Email
+	form.Values["phone"] = contact.Phone
 
 	components.Layout(components.PageEditContact(*form)).Render(r.Context(), w)
 }
