@@ -2,6 +2,20 @@ package components
 
 import "fmt"
 
+type Pagination struct {
+	Page    int
+	Limit   int
+	MaxPage int
+}
+
+func NewPagination() *Pagination {
+	return &Pagination{
+		Page:    1,
+		Limit:   10,
+		MaxPage: 0,
+	}
+}
+
 type Form struct {
 	Values map[string]string
 	Errors map[string]string
@@ -34,21 +48,30 @@ func NewContact(name, email, phone string) *Contact {
 }
 
 type Contacts struct {
-	Data []Contact
+	Data  []Contact
+	Count int
 }
 
 func (cs *Contacts) Init() {
 	for i := 0; i < 20; i++ {
-		cs.Data = append(cs.Data, *NewContact(
+		cs.Add(
 			fmt.Sprintf("user %d", i),
 			fmt.Sprintf("user%d@gmail.com", i),
 			fmt.Sprintf("00000%d", i),
-		))
+		)
 	}
+}
+
+func (cs *Contacts) Paging(pagination Pagination) *Contacts {
+	contacts := Contacts{}
+	offset := (pagination.Page * pagination.Limit) - pagination.Limit
+	contacts.Data = append(contacts.Data, cs.Data[offset:pagination.Page*pagination.Limit]...)
+	return &contacts
 }
 
 func (cs *Contacts) Add(name, email, phone string) {
 	cs.Data = append(cs.Data, *NewContact(name, email, phone))
+	cs.Count++
 }
 
 func (cs *Contacts) Edit(contact Contact) {
@@ -61,6 +84,7 @@ func (cs *Contacts) Edit(contact Contact) {
 func (cs *Contacts) Delete(id int) {
 	i := cs.IndexOf(id)
 	cs.Data = append(cs.Data[:i], cs.Data[i+1:]...)
+	cs.Count--
 }
 
 // if not found return nil

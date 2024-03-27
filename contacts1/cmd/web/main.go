@@ -325,7 +325,7 @@ func main() {
 	var handler http.Handler = mux
 
 	server := new(http.Server)
-	server.Addr = "127.0.0.1:8000"
+	server.Addr = "127.0.0.1:8100"
 	server.Handler = handler
 
 	err := server.ListenAndServe()

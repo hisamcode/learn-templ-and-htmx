@@ -2,33 +2,40 @@ package components
 
 import "fmt"
 
-templ PageContacts(contacts Contacts) {
-	<table>
-		<thead>
-			<tr>
-				<td>ID</td>
-				<td>Name</td>
-				<td>Email</td>
-				<td>Phone</td>
-				<td></td>
-			</tr>
-		</thead>
-		<tbody>
-			for _, v := range contacts.Data {
+templ PageContacts(contacts Contacts, pagination Pagination) {
+	<div id="page-contacts">
+		<table>
+			<thead>
 				<tr>
-					<td>{ fmt.Sprintf("%d", v.ID) }</td>
-					<td>{ v.Name }</td>
-					<td>{ v.Email }</td>
-					<td>{ v.Phone }</td>
-					<td>
-						@buttonViewContact(fmt.Sprintf("%d", v.ID))
-						@buttonEditContact(fmt.Sprintf("%d", v.ID))
-						@buttonDeleteContact(fmt.Sprintf("%d", v.ID), v.Name)
-					</td>
+					<td>ID</td>
+					<td>Name</td>
+					<td>Email</td>
+					<td>Phone</td>
+					<td></td>
 				</tr>
-			}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				@ListContacts(contacts)
+			</tbody>
+		</table>
+		@paginationButton(pagination)
+	</div>
+}
+
+templ ListContacts(contacts Contacts) {
+	for _, v := range contacts.Data {
+		<tr>
+			<td>{ fmt.Sprintf("%d", v.ID) }</td>
+			<td>{ v.Name }</td>
+			<td>{ v.Email }</td>
+			<td>{ v.Phone }</td>
+			<td>
+				@buttonViewContact(fmt.Sprintf("%d", v.ID))
+				@buttonEditContact(fmt.Sprintf("%d", v.ID))
+				@buttonDeleteContact(fmt.Sprintf("%d", v.ID), v.Name)
+			</td>
+		</tr>
+	}
 }
 
 templ PageDetailContact(form Form) {
@@ -135,6 +142,31 @@ templ buttonViewContact(id string) {
 		hx-push-url="true"
 		hx-target="body"
 	>View</button>
+}
+
+templ paginationButton(pagination Pagination) {
+	<div>
+		<button
+			id="button-pagination-prev"
+			if pagination.Page > 1 {
+				hx-get={ fmt.Sprintf("/contacts?page=%d", pagination.Page-1) }
+			} else {
+				hx-disable
+			}
+			hx-target="#page-contacts"
+			hx-push-url="true"
+		>prev</button>
+		<button
+			id="button-pagination-next"
+			if pagination.Page < pagination.MaxPage {
+				hx-get={ fmt.Sprintf("/contacts?page=%d", pagination.Page+1) }
+			} else {
+				hx-disable
+			}
+			hx-target="#page-contacts"
+			hx-push-url="true"
+		>next</button>
+	</div>
 }
 
 templ Layout(content templ.Component) {

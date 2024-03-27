@@ -2,6 +2,7 @@ package main
 
 import (
 	"contacts2/components"
+	"math"
 	"net/http"
 	"strconv"
 )
@@ -11,7 +12,30 @@ type App struct {
 }
 
 func (app App) pageListHandler(w http.ResponseWriter, r *http.Request) {
-	components.Layout(components.PageContacts(*app.contacts)).Render(r.Context(), w)
+
+	var err error
+
+	pagination := *components.NewPagination()
+	pagination.MaxPage = int(math.Ceil(float64(app.contacts.Count) / float64(pagination.Limit)))
+
+	if r.URL.Query().Has("page") {
+		pageStr := r.URL.Query().Get("page")
+		pagination.Page, err = strconv.Atoi(pageStr)
+		if err != nil {
+			http.Redirect(w, r, "/contacts", http.StatusSeeOther)
+			return
+		}
+	}
+
+	hxTrigger, ok := r.Header[http.CanonicalHeaderKey("hx-trigger")]
+	if ok {
+		if hxTrigger[0] == "button-pagination-next" || hxTrigger[0] == "button-pagination-prev" {
+			components.PageContacts(*app.contacts.Paging(pagination), pagination).Render(r.Context(), w)
+			return
+		}
+	}
+
+	components.Layout(components.PageContacts(*app.contacts.Paging(pagination), pagination)).Render(r.Context(), w)
 }
 func (app App) pageDetailHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
