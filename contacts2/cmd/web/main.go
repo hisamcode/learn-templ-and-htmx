@@ -181,7 +181,32 @@ func (app App) pageEditHandler(w http.ResponseWriter, r *http.Request) {
 
 	components.Layout(components.PageEditContact(*form)).Render(r.Context(), w)
 }
-func (app App) editHandler(w http.ResponseWriter, r *http.Request)   {}
+func (app App) editHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
+		return
+	}
+
+	form := components.NewForm()
+	form.Values["id"] = idStr
+	form.Values["name"] = r.PostFormValue("name")
+	form.Values["email"] = r.PostFormValue("email")
+	form.Values["phone"] = r.PostFormValue("phone")
+
+	contact := components.NewContact(
+		form.Values["name"],
+		form.Values["email"],
+		form.Values["phone"],
+	)
+	contact.ID = id
+
+	app.contacts.Edit(*contact)
+
+	http.Redirect(w, r, fmt.Sprintf("/contacts/%d", id), http.StatusSeeOther)
+
+}
 func (app App) deleteHandler(w http.ResponseWriter, r *http.Request) {}
 
 func main() {
