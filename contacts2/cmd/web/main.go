@@ -207,7 +207,20 @@ func (app App) editHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/contacts/%d", id), http.StatusSeeOther)
 
 }
-func (app App) deleteHandler(w http.ResponseWriter, r *http.Request) {}
+func (app App) deleteHandler(w http.ResponseWriter, r *http.Request) {
+
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
+		return
+	}
+
+	app.contacts.Delete(id)
+
+	fmt.Fprint(w, "")
+
+}
 
 func main() {
 

@@ -148,7 +148,8 @@ templ buttonDeleteContact(id string, name string) {
 	<button
 		hx-delete={ fmt.Sprintf("/contacts/%s", id) }
 		hx-confirm={ fmt.Sprintf("Are you sure want to delete(%s)?", name) }
-		hx-target="body"
+		hx-target="closest tr"
+		hx-swap="outerHTML"
 	>Delete</button>
 }
 

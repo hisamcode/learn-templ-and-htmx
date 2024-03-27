@@ -1,6 +1,8 @@
 package components
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Pagination struct {
 	Page    int
@@ -63,10 +65,15 @@ func (cs *Contacts) Init() {
 }
 
 func (cs *Contacts) Paging(pagination Pagination) *Contacts {
-	contacts := Contacts{}
+	contacts := new(Contacts)
 	offset := (pagination.Page * pagination.Limit) - pagination.Limit
-	contacts.Data = append(contacts.Data, cs.Data[offset:pagination.Page*pagination.Limit]...)
-	return &contacts
+	// contacts.Data = append(contacts.Data, cs.Data[offset:pagination.Page*pagination.Limit]...)
+	for i, v := range cs.Data {
+		if i >= offset && i < pagination.Page*pagination.Limit {
+			contacts.Data = append(contacts.Data, v)
+		}
+	}
+	return contacts
 }
 
 func (cs *Contacts) Add(name, email, phone string) {
