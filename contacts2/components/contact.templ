@@ -68,7 +68,15 @@ templ PageCreateContact(form Form) {
 		</div>
 		<div>
 			<label for="email">Email</label>
-			<input type="email" id="email" name="email" value={ form.Values["email"] }/>
+			<input
+				type="email"
+				id="email"
+				name="email"
+				value={ form.Values["email"] }
+				hx-post="/contacts/validate-email"
+				hx-trigger="keyup delay:500ms changed"
+				hx-target="next span"
+			/>
 			<span>{ form.Errors["email"] }</span>
 		</div>
 		<div>
@@ -95,7 +103,15 @@ templ PageEditContact(form Form) {
 		</div>
 		<div>
 			<label for="email">Email</label>
-			<input type="email" id="email" name="email" value={ form.Values["email"] }/>
+			<input
+				type="email"
+				id="email"
+				name="email"
+				value={ form.Values["email"] }
+				hx-post="/contacts/validate-email"
+				hx-trigger="changed keyup delay:500ms"
+				hx-target="next span"
+			/>
 			<span>{ form.Errors["email"] }</span>
 		</div>
 		<div>

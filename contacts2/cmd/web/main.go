@@ -2,6 +2,7 @@ package main
 
 import (
 	"contacts2/components"
+	"fmt"
 	"math"
 	"net/http"
 	"strconv"
@@ -80,7 +81,20 @@ func (app App) createHandler(w http.ResponseWriter, r *http.Request) {
 	var errorCount int
 
 	if app.contacts.FindByEmail(form.Values["email"]) != nil {
-		form.Errors["email"] = "email has been registered"
+		form.Errors["email"] = "duplicate email"
+		errorCount++
+	}
+
+	if len(form.Values["name"]) < 1 || form.Values["name"] == "" {
+		form.Errors["name"] = "name cant empty"
+		errorCount++
+	}
+	if len(form.Values["email"]) < 1 || form.Values["email"] == "" {
+		form.Errors["email"] = "email cant empty"
+		errorCount++
+	}
+	if len(form.Values["phone"]) < 1 || form.Values["phone"] == "" {
+		form.Errors["phone"] = "phone cant empty"
 		errorCount++
 	}
 
@@ -97,6 +111,25 @@ func (app App) createHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/contacts", http.StatusSeeOther)
 }
+
+func (app App) validateEmailHandler(w http.ResponseWriter, r *http.Request) {
+	email := r.PostFormValue("email")
+
+	if len(email) < 1 || email == "" {
+		fmt.Fprint(w, "email cant empty")
+		return
+	}
+
+	contact := app.contacts.FindByEmail(email)
+	if contact != nil {
+		fmt.Fprint(w, "duplicate email")
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	fmt.Fprint(w, "")
+}
+
 func (app App) pageEditHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 
@@ -146,6 +179,7 @@ func main() {
 	mux.HandleFunc("GET /contacts", app.pageListHandler)
 	mux.HandleFunc("GET /contacts/{id}", app.pageDetailHandler)
 	mux.HandleFunc("GET /contacts/create", app.pageCreateHandler)
+	mux.HandleFunc("POST /contacts/validate-email", app.validateEmailHandler)
 	mux.HandleFunc("POST /contacts", app.createHandler)
 	mux.HandleFunc("GET /contacts/{id}/edit", app.pageEditHandler)
 	mux.HandleFunc("PUT /contacts/{id}", app.editHandler)
