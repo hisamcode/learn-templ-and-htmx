@@ -4,20 +4,37 @@ import "fmt"
 
 templ PageContacts(contacts Contacts, pagination Pagination) {
 	<div id="page-contacts">
-		<table>
-			<thead>
-				<tr>
-					<td>ID</td>
-					<td>Name</td>
-					<td>Email</td>
-					<td>Phone</td>
-					<td></td>
-				</tr>
-			</thead>
-			<tbody>
-				@ListContacts(contacts)
-			</tbody>
-		</table>
+		<form>
+			<table>
+				<thead>
+					<tr>
+						<td colspan="6">
+							<input
+								type="text"
+								hx-post="/contacts?q"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<button
+								hx-post="/contacts/bulk-delete"
+								hx-target="body"
+								hx-confirm="Are you sure want to delete ?"
+							>Delete</button>
+						</td>
+						<td>ID</td>
+						<td>Name</td>
+						<td>Email</td>
+						<td>Phone</td>
+						<td></td>
+					</tr>
+				</thead>
+				<tbody>
+					@ListContacts(contacts)
+				</tbody>
+			</table>
+		</form>
 		@paginationButton(pagination)
 	</div>
 }
@@ -25,6 +42,7 @@ templ PageContacts(contacts Contacts, pagination Pagination) {
 templ ListContacts(contacts Contacts) {
 	for _, v := range contacts.Data {
 		<tr>
+			<td><input type="checkbox" name="bulk-delete" value={ fmt.Sprintf("%d", v.ID) }/></td>
 			<td>{ fmt.Sprintf("%d", v.ID) }</td>
 			<td>{ v.Name }</td>
 			<td>{ v.Email }</td>
@@ -32,7 +50,7 @@ templ ListContacts(contacts Contacts) {
 			<td>
 				@buttonViewContact(fmt.Sprintf("%d", v.ID))
 				@buttonEditContact(fmt.Sprintf("%d", v.ID))
-				@buttonDeleteContact(fmt.Sprintf("%d", v.ID), v.Name)
+				@buttonDeleteContact(fmt.Sprintf("%d", v.ID), v.Name, false)
 			</td>
 		</tr>
 	}
@@ -54,7 +72,7 @@ templ PageDetailContact(form Form) {
 		</div>
 		<div>
 			@buttonEditContact(form.Values["ID"])
-			@buttonDeleteContact(form.Values["ID"], form.Values["name"])
+			@buttonDeleteContact(form.Values["ID"], form.Values["name"], true)
 		</div>
 	</div>
 }
@@ -125,6 +143,7 @@ templ PageEditContact(form Form) {
 				hx-target="body"
 				hx-push-url="true"
 			>Edit</button>
+			@buttonDeleteContact(form.Values["ID"], form.Values["name"], true)
 		</div>
 	</form>
 }
@@ -151,12 +170,18 @@ templ buttonEditContact(id string) {
 	>Edit</button>
 }
 
-templ buttonDeleteContact(id string, name string) {
+templ buttonDeleteContact(id string, name string, redirect bool) {
 	<button
 		hx-delete={ fmt.Sprintf("/contacts/%s", id) }
 		hx-confirm={ fmt.Sprintf("Are you sure want to delete(%s)?", name) }
-		hx-target="closest tr"
-		hx-swap="outerHTML"
+		hx-push-url="true"
+		if redirect {
+			hx-target="body"
+			id="button-delete-redirect"
+		} else {
+			hx-target="closest tr"
+			hx-swap="outerHTML swap:1s"
+		}
 	>Delete</button>
 }
 
@@ -201,6 +226,12 @@ templ Layout(content templ.Component) {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>Contacts</title>
 			<script src="/js/htmx.min.js"></script>
+			<style>
+				tr.htmx-swapping {
+					opacity: 0;
+					transition: opacity 1s ease-out;
+				}
+			</style>
 		</head>
 		<body>
 			@Header()

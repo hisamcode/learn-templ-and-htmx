@@ -219,6 +219,12 @@ func (app App) deleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	app.contacts.Delete(id)
 
+	hxTrigger := r.Header.Get("hx-trigger")
+	if hxTrigger == "button-delete-redirect" {
+		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
+		return
+	}
+
 	fmt.Fprint(w, "")
 
 }
@@ -226,6 +232,25 @@ func (app App) deleteHandler(w http.ResponseWriter, r *http.Request) {
 func (app App) TotalHandler(w http.ResponseWriter, r *http.Request) {
 	time.Sleep(1 * time.Second)
 	fmt.Fprintf(w, "Total %d contact", app.contacts.Count)
+}
+
+func (app App) bulkDelete(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	selected := r.Form["bulk-delete"]
+
+	form := components.NewForm()
+
+	for _, idStr := range selected {
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			form.Values[idStr] = fmt.Sprintf("error convert id string to int, id = %d", id)
+		} else {
+			app.contacts.Delete(id)
+		}
+	}
+
+	http.Redirect(w, r, "/contacts", http.StatusSeeOther)
 }
 
 func main() {
@@ -253,6 +278,7 @@ func main() {
 	mux.HandleFunc("DELETE /contacts/{id}", app.deleteHandler)
 
 	mux.HandleFunc("GET /contacts/total", app.TotalHandler)
+	mux.HandleFunc("POST /contacts/bulk-delete", app.bulkDelete)
 
 	var handler http.Handler = mux
 
