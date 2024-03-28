@@ -30,6 +30,14 @@ func (app App) pageListHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	hxTrigger, ok := r.Header[http.CanonicalHeaderKey("hx-trigger")]
+	if ok {
+		if hxTrigger[0] == "button-pagination-next" || hxTrigger[0] == "button-pagination-prev" {
+			components.PageContacts(*app.contacts.Paging(pagination), pagination).Render(r.Context(), w)
+			return
+		}
+	}
+
 	if r.URL.Query().Has("q") {
 		q := r.URL.Query().Get("q")
 
@@ -41,14 +49,6 @@ func (app App) pageListHandler(w http.ResponseWriter, r *http.Request) {
 
 			components.PageContacts(*cs, pagination).Render(r.Context(), w)
 			// components.ListContacts(*cs).Render(r.Context(), w)
-			return
-		}
-	}
-
-	hxTrigger, ok := r.Header[http.CanonicalHeaderKey("hx-trigger")]
-	if ok {
-		if hxTrigger[0] == "button-pagination-next" || hxTrigger[0] == "button-pagination-prev" {
-			components.PageContacts(*app.contacts.Paging(pagination), pagination).Render(r.Context(), w)
 			return
 		}
 	}

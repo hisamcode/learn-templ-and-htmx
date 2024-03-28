@@ -16,7 +16,11 @@ templ PageContacts(contacts Contacts, pagination Pagination) {
 					hx-swap="outerHTML"
 					hx-push-url="true"
 					hx-trigger="keyup delay:500ms changed"
+					hx-indicator="#spinner"
 				/>
+				<span id="spinner" class="htmx-indicator">
+					<img width="20" src="/img/spinner.svg" alt="" srcset=""/>
+				</span>
 				<input type="submit" value="Search"/>
 			</form>
 		</div>
