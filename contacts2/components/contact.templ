@@ -4,16 +4,27 @@ import "fmt"
 
 templ PageContacts(contacts Contacts, pagination Pagination) {
 	<div id="page-contacts">
+		<div>
+			<form hx-boost="true" method="get">
+				<label for="search-id">Search</label>
+				<input
+					name="q"
+					id="search-id"
+					type="text"
+					hx-get="/contacts"
+					hx-target="#page-contacts"
+					hx-swap="outerHTML"
+					hx-push-url="true"
+					hx-trigger="keyup delay:500ms changed"
+				/>
+				<input type="submit" value="Search"/>
+			</form>
+		</div>
 		<form>
 			<table>
 				<thead>
 					<tr>
-						<td colspan="6">
-							<input
-								type="text"
-								hx-post="/contacts?q"
-							/>
-						</td>
+						<td colspan="6"></td>
 					</tr>
 					<tr>
 						<td>
@@ -21,6 +32,7 @@ templ PageContacts(contacts Contacts, pagination Pagination) {
 								hx-post="/contacts/bulk-delete"
 								hx-target="body"
 								hx-confirm="Are you sure want to delete ?"
+								hx-include=".selected-bulk-delete"
 							>Delete</button>
 						</td>
 						<td>ID</td>
@@ -42,7 +54,7 @@ templ PageContacts(contacts Contacts, pagination Pagination) {
 templ ListContacts(contacts Contacts) {
 	for _, v := range contacts.Data {
 		<tr>
-			<td><input type="checkbox" name="bulk-delete" value={ fmt.Sprintf("%d", v.ID) }/></td>
+			<td><input class="selected-bulk-delete" type="checkbox" name="bulk-delete" value={ fmt.Sprintf("%d", v.ID) }/></td>
 			<td>{ fmt.Sprintf("%d", v.ID) }</td>
 			<td>{ v.Name }</td>
 			<td>{ v.Email }</td>

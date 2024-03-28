@@ -30,6 +30,21 @@ func (app App) pageListHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if r.URL.Query().Has("q") {
+		q := r.URL.Query().Get("q")
+
+		if len(q) > 0 {
+			cs := app.contacts.Search(q)
+			if len(cs.Data) < 0 {
+				// TODO: not found
+			}
+
+			components.PageContacts(*cs, pagination).Render(r.Context(), w)
+			// components.ListContacts(*cs).Render(r.Context(), w)
+			return
+		}
+	}
+
 	hxTrigger, ok := r.Header[http.CanonicalHeaderKey("hx-trigger")]
 	if ok {
 		if hxTrigger[0] == "button-pagination-next" || hxTrigger[0] == "button-pagination-prev" {

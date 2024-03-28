@@ -2,6 +2,7 @@ package components
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Pagination struct {
@@ -112,6 +113,17 @@ func (cs *Contacts) FindByEmail(email string) *Contact {
 		}
 	}
 	return nil
+}
+
+func (cs *Contacts) Search(str string) *Contacts {
+	contacts := Contacts{}
+	for _, v := range cs.Data {
+		if strings.Contains(v.Email, str) || strings.Contains(v.Name, str) || strings.Contains(v.Phone, str) {
+			contacts.Data = append(contacts.Data, v)
+		}
+	}
+
+	return &contacts
 }
 
 func (cs *Contacts) IndexOf(id int) int {
