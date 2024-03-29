@@ -1,6 +1,20 @@
 package main
 
-templ index() {
+templ formKopi(form Form) {
+	<form hx-post="/validate">
+		<input name="name" value={ form.Values["name"] } type="text"/>
+		<span>{ form.Errors["name"] }</span>
+		<button>validate</button>
+	</form>
+}
+
+templ contentOOB(str string) {
+	<div id="content" hx-swap-oob="#content">
+		{ str }
+	</div>
+}
+
+templ index(form Form) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -15,6 +29,7 @@ templ index() {
 			</style>
 		</head>
 		<body>
+			@formKopi(form)
 			<button hx-post="/integrations/1">
 				Pull Contacts from integration
 			</button>
@@ -22,6 +37,9 @@ templ index() {
 			<table hx-get="/contacts/table" hx-trigger="contacts-updated from:body"></table>
 			<div id="not-found">
 				404 
+			</div>
+			<div id="content">
+				ini konten
 			</div>
 		</body>
 		<script>
