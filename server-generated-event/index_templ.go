@@ -23,7 +23,7 @@ func index() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Document</title><script src=\"/js/htmx.min.js\"></script></head><body><button hx-post=\"/integrations/1\">Pull Contacts from integration\r</button><table hx-get=\"/contacts/table\" hx-trigger=\"contacts-updated from:body\"></table></body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Document</title><script src=\"/js/htmx.min.js\"></script><style>\r\n\t\t\t\t#not-found {\r\n\t\t\t\t\topacity: 0;\r\n\t\t\t\t}\r\n\t\t\t</style></head><body><button hx-post=\"/integrations/1\">Pull Contacts from integration\r</button> <button hx-get=\"/not-found\">test 404</button><table hx-get=\"/contacts/table\" hx-trigger=\"contacts-updated from:body\"></table><div id=\"not-found\">404 \r</div></body><script>\r\n\t\t\tfunction showNotFoundError() {\r\n\t\t\t\tlet notFound = document.getElementById(\"not-found\")\t\r\n\t\t\t\tnotFound.style.opacity = 1\r\n\t\t\t}\r\n\t\t\tdocument.body.addEventListener('htmx:beforeSwap', function(evt) {\r\n\t\t\tconsole.log(evt.detail.xhr, \"xhr\")\r\n\t\t\t\tif (evt.detail.xhr.status === 404) {\r\n\t\t\t\t\tshowNotFoundError()\r\n\t\t\t\t}\r\n\t\t\t})\r\n\t\t</script></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -27,6 +27,9 @@ func main() {
 
 	mux.HandleFunc("POST /integrations/{id}", integration)
 	mux.HandleFunc("GET /contacts/table", table)
+	mux.HandleFunc("GET /not-found", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+	})
 
 	err := http.ListenAndServe("127.0.0.1:8000", mux)
 	panic(err)

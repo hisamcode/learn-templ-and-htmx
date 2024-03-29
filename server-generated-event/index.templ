@@ -8,12 +8,33 @@ templ index() {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>Document</title>
 			<script src="/js/htmx.min.js"></script>
+			<style>
+				#not-found {
+					opacity: 0;
+				}
+			</style>
 		</head>
 		<body>
 			<button hx-post="/integrations/1">
 				Pull Contacts from integration
 			</button>
+			<button hx-get="/not-found">test 404</button>
 			<table hx-get="/contacts/table" hx-trigger="contacts-updated from:body"></table>
+			<div id="not-found">
+				404 
+			</div>
 		</body>
+		<script>
+			function showNotFoundError() {
+				let notFound = document.getElementById("not-found")	
+				notFound.style.opacity = 1
+			}
+			document.body.addEventListener('htmx:beforeSwap', function(evt) {
+			console.log(evt.detail.xhr, "xhr")
+				if (evt.detail.xhr.status === 404) {
+					showNotFoundError()
+				}
+			})
+		</script>
 	</html>
 }
