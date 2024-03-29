@@ -9,7 +9,13 @@ templ formKopi(form Form) {
 }
 
 templ contentOOB(str string) {
-	<div id="content" hx-swap-oob="#content">
+	<div id="content" hx-swap-oob="true">
+		{ str }
+	</div>
+}
+
+templ sidebarOOB(str string) {
+	<div id="sidebar" hx-swap-oob="true">
 		{ str }
 	</div>
 }
@@ -40,6 +46,9 @@ templ index(form Form) {
 			</div>
 			<div id="content">
 				ini konten
+			</div>
+			<div id="sidebar">
+				ini sidebar
 			</div>
 		</body>
 		<script>

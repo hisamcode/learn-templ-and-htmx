@@ -73,7 +73,7 @@ func contentOOB(str string) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"content\" hx-swap-oob=\"#content\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"content\" hx-swap-oob=\"true\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -97,7 +97,7 @@ func contentOOB(str string) templ.Component {
 	})
 }
 
-func index(form Form) templ.Component {
+func sidebarOOB(str string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -110,6 +110,43 @@ func index(form Form) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"sidebar\" hx-swap-oob=\"true\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(str)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 19, Col: 7}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func index(form Form) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var8 == nil {
+			templ_7745c5c3_Var8 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Document</title><script src=\"/js/htmx.min.js\"></script><style>\r\n\t\t\t\t#not-found {\r\n\t\t\t\t\topacity: 0;\r\n\t\t\t\t}\r\n\t\t\t</style></head><body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -118,7 +155,7 @@ func index(form Form) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button hx-post=\"/integrations/1\">Pull Contacts from integration\r</button> <button hx-get=\"/not-found\">test 404</button><table hx-get=\"/contacts/table\" hx-trigger=\"contacts-updated from:body\"></table><div id=\"not-found\">404 \r</div><div id=\"content\">ini konten\r</div></body><script>\r\n\t\t\tfunction showNotFoundError() {\r\n\t\t\t\tlet notFound = document.getElementById(\"not-found\")\t\r\n\t\t\t\tnotFound.style.opacity = 1\r\n\t\t\t}\r\n\t\t\tdocument.body.addEventListener('htmx:beforeSwap', function(evt) {\r\n\t\t\tconsole.log(evt.detail.xhr, \"xhr\")\r\n\t\t\t\tif (evt.detail.xhr.status === 404) {\r\n\t\t\t\t\tshowNotFoundError()\r\n\t\t\t\t}\r\n\t\t\t})\r\n\t\t</script></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button hx-post=\"/integrations/1\">Pull Contacts from integration\r</button> <button hx-get=\"/not-found\">test 404</button><table hx-get=\"/contacts/table\" hx-trigger=\"contacts-updated from:body\"></table><div id=\"not-found\">404 \r</div><div id=\"content\">ini konten\r</div><div id=\"sidebar\">ini sidebar\r</div></body><script>\r\n\t\t\tfunction showNotFoundError() {\r\n\t\t\t\tlet notFound = document.getElementById(\"not-found\")\t\r\n\t\t\t\tnotFound.style.opacity = 1\r\n\t\t\t}\r\n\t\t\tdocument.body.addEventListener('htmx:beforeSwap', function(evt) {\r\n\t\t\tconsole.log(evt.detail.xhr, \"xhr\")\r\n\t\t\t\tif (evt.detail.xhr.status === 404) {\r\n\t\t\t\t\tshowNotFoundError()\r\n\t\t\t\t}\r\n\t\t\t})\r\n\t\t</script></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

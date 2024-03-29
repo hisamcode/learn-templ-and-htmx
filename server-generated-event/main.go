@@ -53,6 +53,7 @@ func main() {
 		}
 
 		contentOOB("dari post validate").Render(r.Context(), w)
+		sidebarOOB("sidebar dari post validate").Render(r.Context(), w)
 	})
 
 	err := http.ListenAndServe("127.0.0.1:8000", mux)
