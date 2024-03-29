@@ -5,5 +5,6 @@ use (
 	./contacts1
 	./contacts2
 	./hypermedia.system
+	./server-generated-event
 	./templ
 )
