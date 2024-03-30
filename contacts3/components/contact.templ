@@ -1,0 +1,82 @@
+package components
+
+import "fmt"
+
+templ MainSearch(form Form) {
+	<div id="main-search" hx-boost="true">
+		<label for="search">Search</label>
+		<input
+			type="text"
+			name="q"
+			id="search"
+			hx-get="/contacts"
+			hx-trigger="keyup delay:500ms changed"
+			value={ form.Values["q"] }
+			hx-indicator="#main-search-indicator"
+		/>
+		<button>Search</button>
+		<span id="main-search-indicator" class="htmx-indicator">loading...</span>
+	</div>
+}
+
+templ MainSearchErr(form Form) {
+	<tbody id="tbody" hx-swap-oob="true">
+		<tr>
+			<td colspan="5" style="text-align:center; color:red;">{ form.Errors["q"] }</td>
+		</tr>
+	</tbody>
+}
+
+templ TableContacts(contacts Contacts, oob bool) {
+	<table
+		id="table-contacts"
+		if oob {
+			hx-swap-oob="true"
+		}
+	>
+		<thead>
+			<tr>
+				<td>ID</td>
+				<td>Name</td>
+				<td>Email</td>
+				<td>Phone</td>
+				<td></td>
+			</tr>
+		</thead>
+		<tbody id="tbody">
+			for _, v:= range contacts.Data {
+				<tr>
+					<td>{ fmt.Sprintf("%d", v.ID) }</td>
+					<td>{ v.Name }</td>
+					<td>{ v.Email }</td>
+					<td>{ v.Phone }</td>
+					<td>
+						<button>View</button>
+						<button>Edit</button>
+						<button>Delete</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+templ Layout(content templ.Component, pagination Pagination, form Form) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Document</title>
+			<script src="/js/htmx.min.js"></script>
+		</head>
+		<body>
+			<div id="menu">
+				<a href="/contacts">Contacts</a> | 			
+				<a href="/contacts/create">Create Contacts ({ fmt.Sprintf("%d Contacts", pagination.Total) })</a>
+			</div>
+			@MainSearch(form)
+			@content
+		</body>
+	</html>
+}

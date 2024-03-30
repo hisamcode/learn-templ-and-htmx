@@ -1,14 +1,14 @@
 cg:
-	cd ./contacts2/components && templ generate
+	cd ./contacts3/components && templ generate
 
 cgr:
-	cd ./contacts2/components && templ generate && cd ../ && go run cmd/web/main.go
+	cd ./contacts3/components && templ generate && cd ../ && go run cmd/web/main.go
 
 cr:
-	cd ./contacts2 && go run cmd/web/main.go
+	cd ./contacts3 && go run cmd/web/main.go
 
 cexp:
-	cd ./contacts2 && go run cmd/exp/main.go
+	cd ./contacts3 && go run cmd/exp/main.go
 
 g:
 	cd ./hypermedia.system/components && templ generate
