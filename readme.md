@@ -1,3 +1,3 @@
 # next
 
-chapter 8, updating other content
+chapter 9, a simple counter
