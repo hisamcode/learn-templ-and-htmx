@@ -20,14 +20,19 @@ templ MainSearch(form Form) {
 }
 
 templ MainSearchErr(form Form) {
-	<tbody id="tbody" hx-swap-oob="true">
-		<tr>
-			<td colspan="5" style="text-align:center; color:red;">{ form.Errors["q"] }</td>
-		</tr>
-	</tbody>
+	<div>
+		<table>
+			<tbody id="tbody" hx-swap-oob="#tbody">
+				<tr>
+					<td colspan="5" style="text-align:center; color:red;">{ form.Errors["q"] }</td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="pagination" hx-swap-oob="#pagination"></div>
+	</div>
 }
 
-templ TableContacts(contacts Contacts, oob bool) {
+templ TableContacts(contacts Contacts, pagination Pagination, oob bool, showPagination bool) {
 	<table
 		id="table-contacts"
 		if oob {
@@ -59,6 +64,27 @@ templ TableContacts(contacts Contacts, oob bool) {
 			}
 		</tbody>
 	</table>
+	@PaginationButton(pagination, oob, showPagination)
+}
+
+templ PaginationButton(pagination Pagination, oob bool, showPagination bool) {
+	<div
+		id="pagination"
+		if oob {
+			hx-swap-oob="true"
+		}
+	>
+		if showPagination {
+			// page 2
+			if pagination.Page > 2 {
+				<button>Prev</button>
+			}
+			<span>Page: { fmt.Sprintf("%d", pagination.Page) }</span>
+			if pagination.Page < pagination.MaxPage {
+				<button>Next</button>
+			}
+		}
+	</div>
 }
 
 templ Layout(content templ.Component, pagination Pagination, form Form) {

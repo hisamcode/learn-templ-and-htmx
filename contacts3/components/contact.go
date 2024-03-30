@@ -20,16 +20,18 @@ func NewForm() *Form {
 }
 
 type Pagination struct {
-	Page  int
-	Limit int
-	Total int
+	Page    int
+	Limit   int
+	Total   int
+	MaxPage int
 }
 
 func NewPagination(page, limit int, total *int) *Pagination {
 	return &Pagination{
-		Page:  page,
-		Limit: limit,
-		Total: *total,
+		Page:    page,
+		Limit:   limit,
+		Total:   *total,
+		MaxPage: int(math.Ceil(float64(*total) / float64(limit))),
 	}
 
 }
@@ -126,9 +128,7 @@ func (cs Contacts) Paging(pagination *Pagination) *Contacts {
 		pagination.Page = 1
 	}
 
-	maxPage := math.Ceil(float64(pagination.Total) / float64(pagination.Limit))
-
-	if pagination.Page > int(maxPage) {
+	if pagination.Page > pagination.MaxPage {
 		return nil
 	}
 

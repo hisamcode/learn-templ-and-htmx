@@ -4,7 +4,6 @@ import (
 	"contacts3/components"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 type App struct {
@@ -30,7 +29,7 @@ func (app App) handleContacts(w http.ResponseWriter, r *http.Request) {
 	if hxTrigger == "search" {
 
 		if len(form.Values["q"]) > 0 {
-			time.Sleep(1 * time.Second)
+			// time.Sleep(1 * time.Second)
 			cs, err := app.contacts.Search(form.Values["q"])
 			if err != nil {
 				form.Errors["q"] = err.Error()
@@ -38,17 +37,17 @@ func (app App) handleContacts(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			// pagination := components.NewPagination(page, limit, &contacts.Total)
-			components.TableContacts(*cs, true).Render(r.Context(), w)
+			pagination := components.NewPagination(page, limit, &cs.Total)
+			components.TableContacts(*cs, *pagination, true, false).Render(r.Context(), w)
 			return
 
 		} else {
-			components.TableContacts(*app.contacts.Paging(pagination), true).Render(r.Context(), w)
+			components.TableContacts(*app.contacts.Paging(pagination), *pagination, true, true).Render(r.Context(), w)
 			return
 		}
 	}
 
-	components.Layout(components.TableContacts(*app.contacts.Paging(pagination), false), *pagination, *form).Render(r.Context(), w)
+	components.Layout(components.TableContacts(*app.contacts.Paging(pagination), *pagination, false, true), *pagination, *form).Render(r.Context(), w)
 }
 
 func main() {
