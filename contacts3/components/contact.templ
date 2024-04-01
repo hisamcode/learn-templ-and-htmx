@@ -75,23 +75,27 @@ templ TableContacts(contacts Contacts, pagination Pagination, oob bool, showPagi
 			</tbody>
 		</table>
 		<hr/>
-		<template x-if="selected.length > 0">
-			<div class="box info tool-bar">
-				<slot x-text="selected.length"></slot>
-				Contacts selected
-				<div x-text="selected"></div>
-				<button
-					type="button"
-					class="bad bg color border"
-					x-on:click="
-						confirm(`Delete ${selected.length} contacts?`) &&
-						htmx.ajax('POST', '/contacts/bulk-delete', {source: $root, target: document.body})
-					"
-				>Delete</button>
-				<hr/>
-				<button type="button" x-on:click="selected = []">Cancel</button>
-			</div>
-		</template>
+		// <template x-if="selected.length > 0">
+		<div class="box info tool-bar" x-show="selected.length > 0">
+			<slot x-text="selected.length"></slot>
+			Contacts selected
+			<div x-text="selected"></div>
+			<button
+				type="button"
+				class="bad bg color border"
+				hx-post="/contacts/bulk-delete"
+				hx-target="body"
+				hx-trigger="confirmed"
+				@click="SA($el, {
+					title: `Delete ${selected.length} contacts ?`,
+					showCancelButton: true,
+					confirmButtonText: 'Delete'
+				})"
+			>Delete</button>
+			<hr/>
+			<button type="button" x-on:click="selected = []">Cancel</button>
+		</div>
+		// </template>
 	</form>
 	<hr/>
 	@PaginationButton(pagination, oob, showPagination)
@@ -133,6 +137,8 @@ templ Layout(content templ.Component, pagination Pagination, form Form) {
 			<link rel="stylesheet" href="/css/missing.css"/>
 			<script defer src="/js/alphine.js"></script>
 			<script src="/js/htmx.min.js"></script>
+			<script src="/js/sweetalert.js"></script>
+			<script src="/js/main.js"></script>
 		</head>
 		<body class="padding">
 			<div x-data="{test:'haha'}">

@@ -184,7 +184,7 @@ func TableContacts(contacts Contacts, pagination Pagination, oob bool, showPagin
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tbody></table><hr><template x-if=\"selected.length &gt; 0\"><div class=\"box info tool-bar\"><slot x-text=\"selected.length\"></slot> Contacts selected\r<div x-text=\"selected\"></div><button type=\"button\" class=\"bad bg color border\" x-on:click=\"\n						confirm(`Delete ${selected.length} contacts?`) &amp;&amp;\n						htmx.ajax(&#39;POST&#39;, &#39;/contacts/bulk-delete&#39;, {source: $root, target: document.body})\n					\">Delete</button><hr><button type=\"button\" x-on:click=\"selected = []\">Cancel</button></div></template></form><hr>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tbody></table><hr><div class=\"box info tool-bar\" x-show=\"selected.length &gt; 0\"><slot x-text=\"selected.length\"></slot> Contacts selected\r<div x-text=\"selected\"></div><button type=\"button\" class=\"bad bg color border\" hx-post=\"/contacts/bulk-delete\" hx-target=\"body\" hx-trigger=\"confirmed\" @click=\"SA($el, {\n					title: `Delete ${selected.length} contacts ?`,\n					showCancelButton: true,\n					confirmButtonText: &#39;Delete&#39;\n				})\">Delete</button><hr><button type=\"button\" x-on:click=\"selected = []\">Cancel</button></div></form><hr>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -239,7 +239,7 @@ func PaginationButton(pagination Pagination, oob bool, showPagination bool) temp
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/contacts?page=%d", pagination.Page-1))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 112, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 116, Col: 65}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -257,7 +257,7 @@ func PaginationButton(pagination Pagination, oob bool, showPagination bool) temp
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", pagination.Page))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 115, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 119, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -275,7 +275,7 @@ func PaginationButton(pagination Pagination, oob bool, showPagination bool) temp
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/contacts?page=%d", pagination.Page+1))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 119, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 123, Col: 65}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -311,14 +311,14 @@ func Layout(content templ.Component, pagination Pagination, form Form) templ.Com
 			templ_7745c5c3_Var15 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Document</title><link rel=\"stylesheet\" href=\"/css/missing.css\"><script defer src=\"/js/alphine.js\"></script><script src=\"/js/htmx.min.js\"></script></head><body class=\"padding\"><div x-data=\"{test:&#39;haha&#39;}\"><div x-text=\"test\"></div></div><div id=\"menu\"><a href=\"/contacts\">Contacts</a> | \t\t\t\r <a href=\"/contacts/create\">Create Contacts (")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Document</title><link rel=\"stylesheet\" href=\"/css/missing.css\"><script defer src=\"/js/alphine.js\"></script><script src=\"/js/htmx.min.js\"></script><script src=\"/js/sweetalert.js\"></script><script src=\"/js/main.js\"></script></head><body class=\"padding\"><div x-data=\"{test:&#39;haha&#39;}\"><div x-text=\"test\"></div></div><div id=\"menu\"><a href=\"/contacts\">Contacts</a> | \t\t\t\r <a href=\"/contacts/create\">Create Contacts (")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d Contacts", pagination.Total))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 143, Col: 94}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact.templ`, Line: 149, Col: 94}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
