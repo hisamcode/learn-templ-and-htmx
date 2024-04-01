@@ -168,10 +168,26 @@ func (cs *Contacts) Edit(contact *Contact) error {
 }
 
 func (cs *Contacts) Delete(id int) error {
+	// for i, v := range cs.Data {
+	// 	if v.ID == id {
+	// 		cs.Data = append(cs.Data[:i], cs.Data[i+1:]...)
+	// 	}
+	// }
+	i, err := cs.IndexOf(id)
+	if err != nil {
+		return err
+	}
+	cs.Data = append(cs.Data[:*i], cs.Data[*i+1:]...)
+	cs.Total--
+	return nil
+}
+
+func (cs Contacts) IndexOf(id int) (*int, error) {
 	for i, v := range cs.Data {
 		if v.ID == id {
-			cs.Data = append(cs.Data[:i], cs.Data[i+1:]...)
+			return &i, nil
 		}
 	}
-	return nil
+
+	return nil, errors.New("id not found")
 }

@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "./contacts2/cmd/web/main.go"
+            "program": "./contacts3/cmd/web/main.go"
         }
     ]
 }

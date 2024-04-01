@@ -2,12 +2,13 @@ package main
 
 import (
 	"contacts3/components"
+	"fmt"
 	"net/http"
 	"strconv"
 )
 
 type App struct {
-	contacts components.Contacts
+	contacts *components.Contacts
 }
 
 func (app App) handleContacts(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +55,7 @@ func main() {
 	contacts := components.NewContacts()
 
 	app := App{
-		contacts: *contacts,
+		contacts: contacts,
 	}
 
 	mux := http.NewServeMux()
@@ -62,6 +63,33 @@ func main() {
 	mux.Handle("/", http.FileServer(http.Dir("../vendor/")))
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
+	})
+	mux.HandleFunc("POST /contacts/bulk-delete", func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		selectedIDs := r.PostForm["selected_contact_ids"]
+		var err error
+		var id int
+		errCollection := make(map[string]error)
+		for _, idStr := range selectedIDs {
+			id, err = strconv.Atoi(idStr)
+			if err != nil {
+				fmt.Println(err)
+				errCollection[idStr] = err
+				continue
+			}
+			err = app.contacts.Delete(id)
+			if err != nil {
+				errCollection[idStr] = err
+				fmt.Println(err)
+			}
+		}
+
+		if len(errCollection) > 0 {
+			// TODO: Error delete
+		}
+
+		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
+
 	})
 
 	mux.HandleFunc("GET /contacts", app.handleContacts)

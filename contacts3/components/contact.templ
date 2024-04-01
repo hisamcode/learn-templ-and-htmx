@@ -33,37 +33,67 @@ templ MainSearchErr(form Form) {
 }
 
 templ TableContacts(contacts Contacts, pagination Pagination, oob bool, showPagination bool) {
-	<table
-		id="table-contacts"
-		if oob {
-			hx-swap-oob="true"
-		}
-	>
-		<thead>
-			<tr>
-				<td>ID</td>
-				<td>Name</td>
-				<td>Email</td>
-				<td>Phone</td>
-				<td></td>
-			</tr>
-		</thead>
-		<tbody id="tbody">
-			for _, v:= range contacts.Data {
-				<tr>
-					<td>{ fmt.Sprintf("%d", v.ID) }</td>
-					<td>{ v.Name }</td>
-					<td>{ v.Email }</td>
-					<td>{ v.Phone }</td>
-					<td>
-						<button>View</button>
-						<button>Edit</button>
-						<button>Delete</button>
-					</td>
-				</tr>
+	<form x-data="{selected: []}">
+		<table
+			id="table-contacts"
+			if oob {
+				hx-swap-oob="true"
 			}
-		</tbody>
-	</table>
+		>
+			<thead>
+				<tr>
+					<td></td>
+					<td>ID</td>
+					<td>Name</td>
+					<td>Email</td>
+					<td>Phone</td>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody id="tbody">
+				for _, v:= range contacts.Data {
+					<tr>
+						<td>
+							<input
+								type="checkbox"
+								name="selected_contact_ids"
+								value={ fmt.Sprintf("%d", v.ID) }
+								x-model="selected"
+							/>
+						</td>
+						<td>{ fmt.Sprintf("%d", v.ID) }</td>
+						<td>{ v.Name }</td>
+						<td>{ v.Email }</td>
+						<td>{ v.Phone }</td>
+						<td>
+							<button>View</button>
+							<button>Edit</button>
+							<button>Delete</button>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<hr/>
+		<template x-if="selected.length > 0">
+			<div class="box info tool-bar">
+				<slot x-text="selected.length"></slot>
+				Contacts selected
+				<div x-text="selected"></div>
+				<button
+					type="button"
+					class="bad bg color border"
+					x-on:click="
+						confirm(`Delete ${selected.length} contacts?`) &&
+						htmx.ajax('POST', '/contacts/bulk-delete', {source: $root, target: document.body})
+					"
+				>Delete</button>
+				<hr/>
+				<button type="button" x-on:click="selected = []">Cancel</button>
+			</div>
+		</template>
+	</form>
+	<hr/>
 	@PaginationButton(pagination, oob, showPagination)
 }
 
@@ -76,12 +106,18 @@ templ PaginationButton(pagination Pagination, oob bool, showPagination bool) {
 	>
 		if showPagination {
 			// page 2
-			if pagination.Page > 2 {
-				<button>Prev</button>
+			if pagination.Page >= 2 {
+				<button
+					hx-target="body"
+					hx-get={ fmt.Sprintf("/contacts?page=%d", pagination.Page-1) }
+				>Prev</button>
 			}
 			<span>Page: { fmt.Sprintf("%d", pagination.Page) }</span>
 			if pagination.Page < pagination.MaxPage {
-				<button>Next</button>
+				<button
+					hx-target="body"
+					hx-get={ fmt.Sprintf("/contacts?page=%d", pagination.Page+1) }
+				>Next</button>
 			}
 		}
 	</div>
@@ -94,9 +130,14 @@ templ Layout(content templ.Component, pagination Pagination, form Form) {
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>Document</title>
+			<link rel="stylesheet" href="/css/missing.css"/>
+			<script defer src="/js/alphine.js"></script>
 			<script src="/js/htmx.min.js"></script>
 		</head>
-		<body>
+		<body class="padding">
+			<div x-data="{test:'haha'}">
+				<div x-text="test"></div>
+			</div>
 			<div id="menu">
 				<a href="/contacts">Contacts</a> | 			
 				<a href="/contacts/create">Create Contacts ({ fmt.Sprintf("%d Contacts", pagination.Total) })</a>
