@@ -1,3 +1,3 @@
 # next
 
-chapter 9, a simple counter
+chapter 9, Alphine js
